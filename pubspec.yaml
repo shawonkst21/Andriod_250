@@ -39,6 +39,7 @@ dependencies:
   lottie: ^3.3.1
   animated_text_kit: ^4.2.3
   flutter_login: ^5.0.0
+  animate_do: ^4.2.0
 
 dev_dependencies:
   flutter_test:
@@ -68,6 +69,8 @@ flutter:
   - assets/emergency.json
   - assets/nearby.json
   - assets/try.json
+  - assets/blood.json
+  - assets/injection.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

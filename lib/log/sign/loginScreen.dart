@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -29,9 +30,24 @@ class LoginScreen extends StatelessWidget {
       onSignup: _signupUser,
       onRecoverPassword: _recoverPassword,
       theme: LoginTheme(
-        primaryColor: Colors.red,
+        primaryColor: Colors.red, // Solid Red Background
+        titleStyle: GoogleFonts.bebasNeue(
+          // Apply Lobster font to title
+          fontSize: 45,
+          color: Colors.white,
+        ),
+        bodyStyle: GoogleFonts.poppins(
+          // Apply Poppins font to body text
+          fontSize: 16,
+          color: const Color.fromARGB(255, 15, 0, 0),
+        ),
+        textFieldStyle: GoogleFonts.poppins(
+          // Font style for input fields
+          fontSize: 16,
+          color: Colors.black,
+        ),
         buttonTheme: LoginButtonTheme(
-          backgroundColor: Colors.redAccent,
+          backgroundColor: Colors.redAccent, // Button color
         ),
       ),
       onSubmitAnimationCompleted: () {

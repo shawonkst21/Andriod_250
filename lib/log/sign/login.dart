@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
                       color: const Color.fromARGB(185, 43, 42, 42)),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 30),
 
                 // Animated Email Field
                 FadeInUp(
@@ -100,7 +100,25 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-
+                SizedBox(
+                  height: 10,
+                ),
+                FadeInUp(
+                  duration: const Duration(milliseconds: 1400),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            "Forgot password? ",
+                            style: GoogleFonts.poppins(
+                                fontSize: 13,
+                                color: const Color.fromARGB(164, 0, 0, 0)),
+                          ),
+                        ]),
+                  ),
+                ),
                 const SizedBox(height: 20),
 
                 // Animated Sign-in Button

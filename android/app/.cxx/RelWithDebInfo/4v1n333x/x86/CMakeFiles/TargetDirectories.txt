@@ -1,0 +1,2 @@
+C:/Users/User/flutterDev/projects/Blood_Donar/android/app/.cxx/RelWithDebInfo/4v1n333x/x86/CMakeFiles/edit_cache.dir
+C:/Users/User/flutterDev/projects/Blood_Donar/android/app/.cxx/RelWithDebInfo/4v1n333x/x86/CMakeFiles/rebuild_cache.dir

@@ -1,5 +1,6 @@
 import 'package:blood_donar/log/sign/login.dart';
-import 'package:blood_donar/profilesetup/ProfileSetupPage1.dart';
+import 'package:blood_donar/profile/profilepage1.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:blood_donar/log/sign/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -22,43 +23,52 @@ class _RegisterPageState extends State<RegisterPage> {
 
   // Sign Up Function
   Future signUp() async {
-    if (_passwordController.text.trim() !=
-        _confirmPasswordController.text.trim()) {
-      showDialog(
-        context: context,
-        builder: (context) => const AlertDialog(
-          title: Text("Error"),
-          content: Text("Passwords don't match"),
-        ),
-      );
-      return;
-    }
-
-    try {
-      // Create the user with email and password
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-
-      // Navigate to ProfileStep1 page after successful sign-up
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ProfileStep1(userData: UserProfileData()),
-        ),
-      );
-    } catch (e) {
-      // Handle any error that occurs during sign up
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("Error"),
-          content: Text(e.toString()),
-        ),
-      );
-    }
+  if (_passwordController.text.trim() !=
+      _confirmPasswordController.text.trim()) {
+    showDialog(
+      context: context,
+      builder: (context) => const AlertDialog(
+        title: Text("Error"),
+        content: Text("Passwords don't match"),
+      ),
+    );
+    return;
   }
+
+  try {
+    // Create the user
+    UserCredential userCredential = await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
+
+    // Save email to Firestore with UID as the document ID
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userCredential.user!.uid)
+        .set({
+      'email': _emailController.text.trim(),
+    });
+
+    // Navigate to ProfileStep1 page
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProfilePage1(),
+      ),
+    );
+  } catch (e) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Error"),
+        content: Text(e.toString()),
+      ),
+    );
+  }
+}
+
 
   @override
   void dispose() {
@@ -89,7 +99,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 // Title
                 Text(
-                  "Life drop!",
+                  "HELLO THERE!",
                   style: GoogleFonts.bebasNeue(
                     fontSize: 52,
                     color: const Color.fromARGB(213, 231, 4, 4),

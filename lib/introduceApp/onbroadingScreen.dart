@@ -1,5 +1,5 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:blood_donar/log/sign/login.dart';
+import 'package:blood_donar/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
@@ -203,7 +203,7 @@ class OnboardingPage extends StatelessWidget {
 Route _zoomRoute() {
   return PageRouteBuilder(
     transitionDuration: const Duration(milliseconds: 500),
-    pageBuilder: (context, animation, secondaryAnimation) => const LoginPage(),
+    pageBuilder: (context, animation, secondaryAnimation) => const warpper(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return ScaleTransition(
         scale: animation,

@@ -11,14 +11,13 @@ class homePage extends StatefulWidget {
 class _homePageState extends State<homePage> {
   signOut() async {
     await FirebaseAuth.instance.signOut();
+    Navigator.pushReplacementNamed(context, '/login');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Text("hello ,welcome"),
-      ),
+      body: Center(child: Text("hell0 world")),
       floatingActionButton: FloatingActionButton(onPressed: () => signOut()),
     );
   }

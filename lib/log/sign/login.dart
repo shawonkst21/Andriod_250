@@ -1,5 +1,9 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:blood_donar/demo/home.dart';
 import 'package:blood_donar/log/sign/register_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
@@ -13,13 +17,64 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-//create controller here
+  bool _isPasswordVisible = false;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  //! here match that account have or not
   Future signIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
-        password: _passwordController.text.trim());
+        password: _passwordController.text.trim(),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => homePage()),
+      );
+      //! add snackbar here ........................................
+      var snackBar2 = SnackBar(
+        elevation: 0,
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        content: AwesomeSnackbarContent(
+          title: 'Success!',
+          titleTextStyle: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+          message: 'Login Successful 🎉',
+          contentType: ContentType.success,
+        ),
+      );
+      final snackBar = snackBar2;
+
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(snackBar);
+
+      // ⏳ Delay a bit so user sees the snackbar
+      // await Future.delayed(const Duration(seconds: 1));
+      //! Navigate only if login succeeds
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = "Login failed";
+
+      if (e.code == 'wrong-password') {
+        errorMessage = "Incorrect password. Please try again.";
+      } else if (e.code == 'user-not-found') {
+        errorMessage = "No user found for this email.";
+      } else {
+        errorMessage = e.message ?? "An unknown error occurred.";
+      }
+
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        title: "Error",
+        desc: errorMessage,
+        btnOkOnPress: () {},
+      ).show();
+    }
   }
 
   @override
@@ -28,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
     _passwordController.dispose();
     super.dispose();
   }
-
+//!# here dispose the controller
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,15 +96,15 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const SizedBox(height: 120),
+                  const SizedBox(height: 80),
 
-                  // Lottie Animation
+                  //! Lottie Animation
                   Lottie.asset(
                     'assets/blood.json',
                     height: 105,
                   ),
 
-                  // Title
+                  //! Title
                   Text(
                     "Life drop!",
                     style: GoogleFonts.bebasNeue(
@@ -57,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                         color: const Color.fromARGB(213, 231, 4, 4)),
                   ),
 
-                  // Welcome Text
+                  //! Welcome Text
                   Text(
                     "Welcome back, you've been missed!",
                     style: GoogleFonts.poppins(
@@ -67,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
 
                   const SizedBox(height: 50),
 
-                  // Animated Email Field
+                  //! Animated Email Field
                   FadeInUp(
                     duration: const Duration(milliseconds: 800),
                     child: Padding(
@@ -95,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
 
                   const SizedBox(height: 10),
 
-                  // Animated Password Field
+                  //! Animated Password Field
                   FadeInUp(
                     duration: const Duration(milliseconds: 1000),
                     child: Padding(
@@ -111,10 +166,23 @@ class _LoginPageState extends State<LoginPage> {
                           padding: const EdgeInsets.only(left: 20.0),
                           child: TextField(
                             controller: _passwordController,
-                            obscureText: true,
-                            decoration: const InputDecoration(
+                            obscureText: !_isPasswordVisible,
+                            decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: "Password",
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _isPasswordVisible
+                                      ? CupertinoIcons.eye
+                                      : CupertinoIcons.eye_slash,
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _isPasswordVisible = !_isPasswordVisible;
+                                  });
+                                },
+                              ),
                             ),
                           ),
                         ),
@@ -142,7 +210,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Animated Sign-in Button
+                  //! Animated Sign-in Button
                   FadeInUp(
                     duration: const Duration(milliseconds: 1200),
                     child: Padding(
@@ -169,7 +237,7 @@ class _LoginPageState extends State<LoginPage> {
 
                   const SizedBox(height: 20),
 
-                  // Animated Sign-up Text
+                  //! Animated Sign-up Text
                   FadeInUp(
                     duration: const Duration(milliseconds: 1400),
                     child: Row(
@@ -194,6 +262,47 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ],
                     ),
+                  ),
+                  const SizedBox(height: 20),
+                  FadeInUp(
+                    duration: const Duration(milliseconds: 2000),
+                    child: const Center(
+                        child: Text(
+                      '- OR Continue with -',
+                      style: TextStyle(color: Colors.grey),
+                    )),
+                  ),
+                  const SizedBox(height: 20),
+                  //! 3 icons for optional login
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FadeInUp(
+                        duration: const Duration(milliseconds: 2200),
+                        child: IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.mail_outline_outlined),
+                            iconSize: 30,
+                            color: Colors.red),
+                      ),
+                      FadeInUp(
+                        duration: const Duration(milliseconds: 2400),
+                        child: IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.facebook),
+                          color: Colors.blue,
+                          iconSize: 30,
+                        ),
+                      ),
+                      FadeInUp(
+                        duration: const Duration(milliseconds: 2600),
+                        child: IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.apple),
+                          iconSize: 30,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

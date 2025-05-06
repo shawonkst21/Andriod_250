@@ -1,7 +1,7 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:blood_donar/log/sign/login.dart';
 import 'package:blood_donar/profile/profilepage1.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-//import 'package:blood_donar/log/sign/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,59 +16,82 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  // Controllers for the registration form
+  //! Controllers for the registration form
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  // Sign Up Function
+//! here create an account using gmail and also check here that email is varified or not !
   Future signUp() async {
-  if (_passwordController.text.trim() !=
-      _confirmPasswordController.text.trim()) {
-    showDialog(
-      context: context,
-      builder: (context) => const AlertDialog(
-        title: Text("Error"),
-        content: Text("Passwords don't match"),
-      ),
-    );
-    return;
+//! check here password is matching or not
+    if (_passwordController.text.trim() !=
+        _confirmPasswordController.text.trim()) {
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        title: "Error",
+        desc: "Passwords don't match",
+        btnOkOnPress: () {},
+      ).show();
+      return;
+    }
+
+    try {
+      //! create user here and add in firebase Authentication
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      //! send verification email to the user
+      await userCredential.user!.sendEmailVerification();
+
+      //! dialoge box to show the user that email is sent to the user
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.info,
+        title: "Verify your email",
+        desc:
+            "A verification link has been sent to your email. After verifying, click below.",
+        btnOkText: "I've Verified",
+        btnOkOnPress: () async {
+          await FirebaseAuth.instance.currentUser
+              ?.reload(); // RELOAD latest user
+          User? user = FirebaseAuth.instance.currentUser; // GET updated user
+
+          if (user != null && user.emailVerified) {
+            // ✅ Only add if verified
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .set({'email': user.email});
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => ProfilePage1()),
+            );
+          } else {
+            AwesomeDialog(
+              context: context,
+              dialogType: DialogType.warning,
+              title: "Not Verified",
+              desc: "Email is not verified yet. Please check again.",
+              btnOkOnPress: () {},
+            ).show();
+          }
+        },
+      ).show();
+    } catch (e) {
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        title: "Registration Failed",
+        desc: e.toString(),
+        btnOkOnPress: () {},
+      ).show();
+    }
   }
-
-  try {
-    // Create the user
-    UserCredential userCredential = await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(
-      email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
-    );
-
-    // Save email to Firestore with UID as the document ID
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userCredential.user!.uid)
-        .set({
-      'email': _emailController.text.trim(),
-    });
-
-    // Navigate to ProfileStep1 page
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ProfilePage1(),
-      ),
-    );
-  } catch (e) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Error"),
-        content: Text(e.toString()),
-      ),
-    );
-  }
-}
-
 
   @override
   void dispose() {
@@ -89,15 +112,13 @@ class _RegisterPageState extends State<RegisterPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(height: 110),
-
-                // Lottie Animation
+                const SizedBox(height: 90),
                 Lottie.asset(
                   'assets/blood.json',
                   height: 105,
                 ),
 
-                // Title
+                //! Title
                 Text(
                   "HELLO THERE!",
                   style: GoogleFonts.bebasNeue(
@@ -106,7 +127,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
 
-                // Register Text
+                //! Register Text
                 Text(
                   "Create an account to get started!",
                   style: GoogleFonts.poppins(
@@ -117,7 +138,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 const SizedBox(height: 50),
 
-                // Animated Email Field
+                //! Animated Email Field
                 FadeInUp(
                   duration: const Duration(milliseconds: 800),
                   child: Padding(
@@ -145,7 +166,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 const SizedBox(height: 10),
 
-                // Animated Password Field
+                //! Animated Password Field
                 FadeInUp(
                   duration: const Duration(milliseconds: 1000),
                   child: Padding(
@@ -174,7 +195,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 const SizedBox(height: 10),
 
-                // Animated Confirm Password Field
+                //! Animated Confirm Password Field
                 FadeInUp(
                   duration: const Duration(milliseconds: 1200),
                   child: Padding(
@@ -255,6 +276,47 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ],
                   ),
+                ),
+                const SizedBox(height: 10),
+                FadeInUp(
+                  duration: const Duration(milliseconds: 2000),
+                  child: const Center(
+                      child: Text(
+                    '- OR SignUp with -',
+                    style: TextStyle(color: Colors.grey),
+                  )),
+                ),
+                const SizedBox(height: 15),
+                //! 3 icons for optional login
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 2200),
+                      child: IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.mail_outline_outlined),
+                          iconSize: 30,
+                          color: Colors.red),
+                    ),
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 2400),
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.facebook),
+                        color: Colors.blue,
+                        iconSize: 30,
+                      ),
+                    ),
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 2600),
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.apple),
+                        iconSize: 30,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

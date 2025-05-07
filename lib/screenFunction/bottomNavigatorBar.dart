@@ -15,8 +15,8 @@ class Bottomnavigatorbar extends StatefulWidget {
 
 class _BottomnavigatorbarState extends State<Bottomnavigatorbar> {
   List Screens = [
-    Homepage(),
     Searchpage(),
+    Homepage(),
     Profilepage(),
   ];
   int _selectedIndex = 1;

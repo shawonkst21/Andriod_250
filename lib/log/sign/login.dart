@@ -1,7 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-import 'package:blood_donar/demo/home.dart';
 import 'package:blood_donar/log/sign/register_page.dart';
+import 'package:blood_donar/screenFunction/bottomNavigatorBar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
       );
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => homePage()),
+        MaterialPageRoute(builder: (context) => Bottomnavigatorbar()),
       );
       //! add snackbar here ........................................
       var snackBar2 = SnackBar(
@@ -83,6 +83,7 @@ class _LoginPageState extends State<LoginPage> {
     _passwordController.dispose();
     super.dispose();
   }
+
 //!# here dispose the controller
   @override
   Widget build(BuildContext context) {

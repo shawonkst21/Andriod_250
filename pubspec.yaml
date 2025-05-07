@@ -49,6 +49,7 @@ dependencies:
   awesome_dialog: ^3.2.1
   getwidget: ^6.0.0
   awesome_snackbar_content: ^0.1.5
+  smooth_page_indicator: ^1.2.1
 
 
 dev_dependencies:
@@ -82,7 +83,13 @@ flutter:
   - assets/blood.json
   - assets/injection.json
   - assets/splash.gif
-  
+  - assets/doctor.png
+  - assets/background.jpg
+  - assets/bg.jpg
+  - assets/shawon.jpg
+  - assets/blob.png
+  - assets/ok.jpg
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

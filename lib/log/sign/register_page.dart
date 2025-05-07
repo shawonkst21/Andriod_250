@@ -23,7 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
 //! here create an account using gmail and also check here that email is varified or not !
   Future signUp() async {
-//! check here password is matching or not
+    // 🔐 Check if passwords match
     if (_passwordController.text.trim() !=
         _confirmPasswordController.text.trim()) {
       AwesomeDialog(
@@ -37,52 +37,26 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     try {
-      //! create user here and add in firebase Authentication
+      // ✅ Create user in Firebase Authentication
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
-      //! send verification email to the user
-      await userCredential.user!.sendEmailVerification();
+      // ✅ Save email to Firestore
+      User? user = userCredential.user;
+      await FirebaseFirestore.instance.collection('users').doc(user?.uid).set({
+        'email': user?.email,
+      });
 
-      //! dialoge box to show the user that email is sent to the user
-      AwesomeDialog(
-        context: context,
-        dialogType: DialogType.info,
-        title: "Verify your email",
-        desc:
-            "A verification link has been sent to your email. After verifying, click below.",
-        btnOkText: "I've Verified",
-        btnOkOnPress: () async {
-          await FirebaseAuth.instance.currentUser
-              ?.reload(); // RELOAD latest user
-          User? user = FirebaseAuth.instance.currentUser; // GET updated user
-
-          if (user != null && user.emailVerified) {
-            // ✅ Only add if verified
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(user.uid)
-                .set({'email': user.email});
-
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => ProfilePage1()),
-            );
-          } else {
-            AwesomeDialog(
-              context: context,
-              dialogType: DialogType.warning,
-              title: "Not Verified",
-              desc: "Email is not verified yet. Please check again.",
-              btnOkOnPress: () {},
-            ).show();
-          }
-        },
-      ).show();
+      // ✅ Navigate to ProfilePage1
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => ProfilePage1()),
+      );
     } catch (e) {
+      // ❌ Handle errors
       AwesomeDialog(
         context: context,
         dialogType: DialogType.error,

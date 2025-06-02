@@ -1,115 +1,66 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+class SliderWithSmoothIndicator extends StatefulWidget {
+  const SliderWithSmoothIndicator({super.key});
 
-class SliverWithCustomAppBar extends StatelessWidget {
-  const SliverWithCustomAppBar({super.key});
+  @override
+  _SliderWithSmoothIndicatorState createState() => _SliderWithSmoothIndicatorState();
+}
+
+class _SliderWithSmoothIndicatorState extends State<SliderWithSmoothIndicator> {
+  int _currentIndex = 0;
+  final CarouselSliderController _carouselController = CarouselSliderController();
+
+  final List<Widget> _containers = [
+    Container(
+      color: Colors.red,
+      child: Center(child: Text('Container 1', style: TextStyle(color: Colors.white, fontSize: 24))),
+    ),
+    Container(
+      color: Colors.green,
+      child: Center(child: Text('Container 2', style: TextStyle(color: Colors.white, fontSize: 24))),
+    ),
+    Container(
+      color: Colors.blue,
+      child: Center(child: Text('Container 3', style: TextStyle(color: Colors.white, fontSize: 24))),
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          // SliverAppBar with Stack as its flexibleSpace
-          SliverAppBar(
-            pinned: true,
-            expandedHeight: 250,
-            backgroundColor: Colors.transparent,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      image: const DecorationImage(
-                        image: AssetImage('assets/bg.jpg'),
-                        fit: BoxFit.cover,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.5),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    padding: const EdgeInsets.only(
-                      left: 15,
-                      top: 60,
-                      bottom: 16,
-                      right: 100,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(25),
-                          child: CircleAvatar(
-                            radius: 20,
-                            backgroundColor: Colors.white,
-                            child: CircleAvatar(
-                              radius: 18,
-                              backgroundImage:
-                                  AssetImage('assets/shawon.jpg'),
-                            ),
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              "Hello,",
-                              style: GoogleFonts.poppins(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(width: 5),
-                            Text(
-                              "Mr.Shawon",
-                              style: GoogleFonts.roboto(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 125, 11, 2),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          "Ready to save a life today?'",
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 125, 11, 2),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    top: 20,
-                    bottom: 0,
-                    child: Image.asset(
-                      'assets/doctor.png',
-                      fit: BoxFit.contain,
-                      height: 200,
-                    ),
-                  ),
-                ],
-              ),
+      appBar: AppBar(title: Text("Smooth Page Indicator")),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CarouselSlider(
+            items: _containers,
+            carouselController: _carouselController,
+            options: CarouselOptions(
+              height: 200,
+              autoPlay: true,
+              enlargeCenterPage: true,
+              onPageChanged: (index, reason) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
             ),
           ),
-
-          // Dummy scrollable content
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              childCount: 10,
-              (context, index) => ListTile(
-                title: Text('Item #$index'),
-              ),
+          const SizedBox(height: 16),
+          AnimatedSmoothIndicator(
+            activeIndex: _currentIndex,
+            count: _containers.length,
+            effect: WormEffect(
+              dotHeight: 12,
+              dotWidth: 12,
+              activeDotColor: Colors.black,
+              dotColor: Colors.grey.shade300,
             ),
+            onDotClicked: (index) {
+              _carouselController.animateToPage(index);
+            },
           ),
         ],
       ),

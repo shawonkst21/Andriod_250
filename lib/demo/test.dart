@@ -1,5 +1,7 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class Test extends StatefulWidget {
   const Test({super.key});
@@ -9,6 +11,180 @@ class Test extends StatefulWidget {
 }
 
 class _TestState extends State<Test> {
+  int _currentIndex = 0;
+  final CarouselSliderController _carouselController =
+      CarouselSliderController();
+  final List<Widget> _containers = [
+    Container(
+      width: 130,
+      height: 90,
+      margin: const EdgeInsets.only(right: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        image: const DecorationImage(
+          image: AssetImage('assets/background.jpg'), // Replace with your image
+          fit: BoxFit.cover,
+        ),
+      ),
+      padding: const EdgeInsets.only(
+        left: 10,
+        top: 10,
+        bottom: 16,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Age",
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "Requirement",
+                    style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.bold, fontSize: 12),
+                  )
+                ],
+              ),
+              Icon(Icons.date_range_outlined)
+            ],
+          ),
+          SizedBox(
+            height: 1,
+          ),
+          Text(
+            "18-65 Ages",
+            style: GoogleFonts.poppins(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: const Color.fromARGB(255, 125, 11, 2)),
+          )
+        ],
+      ),
+    ),
+    Container(
+      width: 130,
+      height: 94,
+      margin: const EdgeInsets.only(right: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        image: const DecorationImage(
+          image: AssetImage('assets/background.jpg'), // Replace with your image
+          fit: BoxFit.cover,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 5,
+            // offset: const Offset(0, 9),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.only(
+        left: 10,
+        top: 10,
+        bottom: 16,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Minimum",
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "weight",
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              Icon(Icons.man, size: 40)
+            ],
+          ),
+          SizedBox(
+            height: 1,
+          ),
+          Text("50 KG",
+              style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: const Color.fromARGB(255, 125, 11, 2)))
+        ],
+      ),
+    ),
+    Container(
+      width: 130,
+      height: 90,
+      margin: const EdgeInsets.only(right: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        image: const DecorationImage(
+          image: AssetImage('assets/background.jpg'), // Replace with your image
+          fit: BoxFit.cover,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.only(
+        left: 10,
+        top: 10,
+        bottom: 16,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Gap between",
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "Donation",
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 1,
+          ),
+          Text("3 Months",
+              style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: const Color.fromARGB(255, 125, 11, 2)))
+        ],
+      ),
+    ),
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +210,7 @@ class _TestState extends State<Test> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             //! Doctor greeting container with overlapping image
             Stack(
@@ -134,87 +310,33 @@ class _TestState extends State<Test> {
             ),
 
             // Optional horizontal scrollable cards or more widgets can go here
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  Container(
-                    width: 120,
-                    height: 120,
-                    margin: const EdgeInsets.only(right: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.redAccent,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 6,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Container 1",
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 120,
-                    height: 120,
-                    margin: const EdgeInsets.only(right: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.blueAccent,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 6,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Container 2",
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 120,
-                    height: 120,
-                    margin: const EdgeInsets.only(right: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.greenAccent,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 6,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Container 3",
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+            CarouselSlider(
+              items: _containers,
+              carouselController: _carouselController,
+              options: CarouselOptions(
+               // height: ,
+                autoPlay: true,
+                enlargeCenterPage: true,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
               ),
+            ),
+            const SizedBox(height: 16),
+            AnimatedSmoothIndicator(
+              activeIndex: _currentIndex,
+              count: _containers.length,
+              effect: WormEffect(
+                dotHeight: 12,
+                dotWidth: 12,
+                activeDotColor: Colors.black,
+                dotColor: Colors.grey.shade300,
+              ),
+              onDotClicked: (index) {
+                _carouselController.animateToPage(index);
+              },
             ),
           ],
         ),

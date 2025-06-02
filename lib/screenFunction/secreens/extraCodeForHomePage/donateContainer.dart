@@ -163,12 +163,20 @@ class BloodDonationCards extends StatelessWidget {
                           style:
                               GoogleFonts.poppins(fontWeight: FontWeight.bold),
                         ),
-                        Text(
-                          "Donation",
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              "Donation",
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                            Icon(
+                              Icons.date_range_outlined,
+                              size: 17,
+                            )
+                          ],
                         )
                       ],
                     ),

@@ -50,6 +50,7 @@ dependencies:
   getwidget: ^6.0.0
   awesome_snackbar_content: ^0.1.5
   smooth_page_indicator: ^1.2.1
+  carousel_slider: ^5.0.0
 
 
 dev_dependencies:
@@ -89,6 +90,7 @@ flutter:
   - assets/shawon.jpg
   - assets/blob.png
   - assets/ok.jpg
+  - assets/search.json
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

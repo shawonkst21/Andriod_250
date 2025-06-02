@@ -1,3 +1,4 @@
+import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/buttonfunction.dart';
 import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/donateContainer.dart';
 import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/firstWelcome.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -30,7 +31,7 @@ class _HomepageState extends State<Homepage> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: Icon(Icons.notifications_active_outlined),
+          icon: Icon(Icons.notifications_none),
           color: Colors.red,
           iconSize: 30,
           onPressed: () {
@@ -40,7 +41,9 @@ class _HomepageState extends State<Homepage> {
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -48,7 +51,7 @@ class _HomepageState extends State<Homepage> {
             WelcomeHomepage(),
             SizedBox(height: 20),
 
-            // Title
+            //! Title
             Text(
               "Who can Donate Blood?",
               style: GoogleFonts.poppins(
@@ -56,20 +59,19 @@ class _HomepageState extends State<Homepage> {
                   fontWeight: FontWeight.bold,
                   color: Colors.black),
             ),
-
-            // Optional horizontal scrollable cards or more widgets can go here
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  const BloodDonationCards(),
-                ],
-              ),
+            //! condition for blood donate
+            BloodDonationCards(),
+            Divider(
+              color: Colors.grey.shade300,
+              thickness: 1,
             ),
+            SizedBox(height: 10),
+            AllButtonForBloodDonation()
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(onPressed: () => signOut()),
+      
     );
   }
 }

@@ -184,10 +184,10 @@ class OnboardingPage extends StatelessWidget {
                   repeatForever: false,
                   totalRepeatCount: 1,
                   animatedTexts: [
-                    TypewriterAnimatedText(
+                    TyperAnimatedText(
                       description,
                       textAlign: TextAlign.center, // Center the text
-                      speed: const Duration(milliseconds: 100),
+                      // duration: const Duration(milliseconds: 1800),
                     ),
                   ],
                 ),

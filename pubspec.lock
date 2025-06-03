@@ -341,6 +341,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
+  icons_flutter:
+    dependency: "direct main"
+    description:
+      name: icons_flutter
+      sha256: "51e9a1b4a1952c952ccba0c50e338f8b3a542e10535a856fe10bf378971114a6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.5"
   intl:
     dependency: "direct main"
     description:
@@ -675,7 +683,7 @@ packages:
     source: hosted
     version: "1.4.0"
   url_launcher:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: url_launcher
       sha256: "9d06212b1362abc2f0f0d78e6f09f726608c74e3b9462e8368bb03314aa8d603"

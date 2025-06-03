@@ -51,6 +51,10 @@ dependencies:
   awesome_snackbar_content: ^0.1.5
   smooth_page_indicator: ^1.2.1
   carousel_slider: ^5.0.0
+  url_launcher: ^6.2.5
+  icons_flutter: ^0.0.5
+
+  
 
 
 dev_dependencies:

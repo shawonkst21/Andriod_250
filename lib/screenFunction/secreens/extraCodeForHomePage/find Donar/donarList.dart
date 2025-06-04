@@ -194,6 +194,7 @@ class Donarlist extends StatelessWidget {
                           fontSize: 20,
                           color: Colors.redAccent,
                           fontWeight: FontWeight.bold,
+                          
                         ),
                       ),
                     ],

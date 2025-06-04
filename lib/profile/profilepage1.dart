@@ -3,9 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:location/location.dart'; // <-- added for location
 
 class ProfilePage1 extends StatefulWidget {
   const ProfilePage1({super.key});
@@ -22,6 +22,9 @@ class _ProfilePage1State extends State<ProfilePage1> {
   String? selectedCountry;
   String? selectedCity;
   DateTime? selectedDonationDate;
+
+  double? latitude; // <-- new
+  double? longitude; // <-- new
 
   bool isFormValid = false;
 
@@ -55,6 +58,7 @@ class _ProfilePage1State extends State<ProfilePage1> {
     super.initState();
     _nameController.addListener(_checkFormValidity);
     _phoneController.addListener(_checkFormValidity);
+    _fetchLocation();
   }
 
   void _checkFormValidity() {
@@ -69,6 +73,29 @@ class _ProfilePage1State extends State<ProfilePage1> {
       setState(() {
         isFormValid = valid;
       });
+    }
+  }
+
+  Future<void> _fetchLocation() async {
+    try {
+      Location location = Location();
+      bool serviceEnabled = await location.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await location.requestService();
+      }
+      PermissionStatus permissionGranted = await location.hasPermission();
+      if (permissionGranted == PermissionStatus.denied) {
+        permissionGranted = await location.requestPermission();
+      }
+      if (permissionGranted == PermissionStatus.granted) {
+        final locData = await location.getLocation();
+        setState(() {
+          latitude = locData.latitude;
+          longitude = locData.longitude;
+        });
+      }
+    } catch (e) {
+      print("Location Error: $e");
     }
   }
 
@@ -91,7 +118,6 @@ class _ProfilePage1State extends State<ProfilePage1> {
   Future<void> _saveToFirestore() async {
     try {
       final uid = FirebaseAuth.instance.currentUser!.uid;
-
       await FirebaseFirestore.instance.collection('users').doc(uid).set({
         'name': _nameController.text,
         'phone': _phoneController.text,
@@ -100,14 +126,18 @@ class _ProfilePage1State extends State<ProfilePage1> {
         'city': selectedCity,
         'lastDonationDate': selectedDonationDate!.toIso8601String(),
         'timestamp': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true)); // 🔥 This keeps previous fields untouched
+        'location': latitude != null && longitude != null
+            ? {'latitude': latitude, 'longitude': longitude}
+            : null,
+      }, SetOptions(merge: true));
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Data saved successfully!")));
-            Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => homePage()),
-    );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Data saved successfully!")),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => homePage()),
+      );
     } catch (e) {
       print("Error: $e");
       ScaffoldMessenger.of(context)
@@ -124,6 +154,7 @@ class _ProfilePage1State extends State<ProfilePage1> {
 
   @override
   Widget build(BuildContext context) {
+    // (No UI changed)
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(

@@ -272,12 +272,12 @@ class _FindDonorScreenState extends State<FindDonorScreen> {
       //! Floating action button for search dialog
       floatingActionButton: FloatingActionButton(
         onPressed: _showSearchDialog,
+        backgroundColor: const Color.fromARGB(255, 125, 11, 2),
         child: const Icon(
           Icons.search,
           color: Colors.white,
           size: 30,
         ),
-        backgroundColor: const Color.fromARGB(255, 125, 11, 2),
       ),
     );
   }

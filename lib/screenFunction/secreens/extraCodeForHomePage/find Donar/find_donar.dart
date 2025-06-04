@@ -15,6 +15,8 @@ class _FindDonorScreenState extends State<FindDonorScreen> {
   String? selectedBloodGroup;
   bool isFilterActive = false;
 
+  //! here check if the user is available for donation or not
+  //! if the last donation date is more than 90 days ago, then the user is available for donation
   bool isAvailableForDonation(dynamic lastDonationDate) {
     DateTime lastDate;
 
@@ -29,6 +31,8 @@ class _FindDonorScreenState extends State<FindDonorScreen> {
     return DateTime.now().difference(lastDate).inDays >= 90;
   }
 
+//! Show the search dialog for filtering donors by district and blood group
+  //! when the user clicks on the search icon in the app bar
   void _showSearchDialog() {
     String? tempDistrict = selectedDistrict;
     String? tempBloodGroup = selectedBloodGroup;
@@ -65,53 +69,83 @@ class _FindDonorScreenState extends State<FindDonorScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(height: 10),
-                DropdownButtonFormField<String>(
-                  value: tempDistrict,
-                  decoration: InputDecoration(
-                    labelText: 'Select District',
-                    labelStyle: GoogleFonts.poppins(),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                Theme(
+                  data: Theme.of(context).copyWith(
+                    canvasColor: Colors.white, // dropdown popup background
                   ),
-                  items: [
-                    'Dhaka',
-                    'Chattogram',
-                    'Khulna',
-                    'Rajshahi',
-                    'sylhet',
-                    'Other'
-                  ]
-                      .map((district) => DropdownMenuItem(
-                            value: district,
-                            child: Text(district, style: GoogleFonts.poppins()),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    tempDistrict = value;
-                  },
+                  child: DropdownButtonFormField<String>(
+                    value: tempDistrict,
+                    decoration: InputDecoration(
+                      labelText: 'Select District',
+                      labelStyle: GoogleFonts.poppins(color: Colors.black),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 12),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color.fromARGB(
+                              255, 125, 11, 2), // border color when focused
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    items: [
+                      'Dhaka',
+                      'Chattogram',
+                      'Khulna',
+                      'Rajshahi',
+                      'sylhet',
+                      'Other'
+                    ]
+                        .map((district) => DropdownMenuItem(
+                              value: district,
+                              child:
+                                  Text(district, style: GoogleFonts.poppins()),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      tempDistrict = value;
+                    },
+                  ),
                 ),
                 const SizedBox(height: 15),
-                DropdownButtonFormField<String>(
-                  value: tempBloodGroup,
-                  decoration: InputDecoration(
-                    labelText: 'Select Blood Group',
-                    labelStyle: GoogleFonts.poppins(),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                Theme(
+                  data: Theme.of(context).copyWith(
+                    canvasColor: Colors.white, // dropdown popup background
                   ),
-                  items: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
-                      .map((group) => DropdownMenuItem(
-                            value: group,
-                            child: Text(group, style: GoogleFonts.poppins()),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    tempBloodGroup = value;
-                  },
+                  child: DropdownButtonFormField<String>(
+                    value: tempBloodGroup,
+                    decoration: InputDecoration(
+                      fillColor: Colors.white,
+                      labelText: 'Select Blood Group',
+                      labelStyle: GoogleFonts.poppins(color: Colors.black),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 12),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color.fromARGB(
+                              255, 125, 11, 2), // border color when focused
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    items: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
+                        .map((group) => DropdownMenuItem(
+                              value: group,
+                              child: Text(group, style: GoogleFonts.poppins()),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      tempBloodGroup = value;
+                    },
+                  ),
                 ),
               ],
             ),
@@ -234,11 +268,14 @@ class _FindDonorScreenState extends State<FindDonorScreen> {
           );
         },
       ),
+
+      //! Floating action button for search dialog
       floatingActionButton: FloatingActionButton(
         onPressed: _showSearchDialog,
         child: const Icon(
           Icons.search,
           color: Colors.white,
+          size: 30,
         ),
         backgroundColor: const Color.fromARGB(255, 125, 11, 2),
       ),

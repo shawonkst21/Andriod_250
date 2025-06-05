@@ -1,6 +1,8 @@
 import 'package:blood_donar/introduceApp/onbroadingScreen.dart';
 import 'package:blood_donar/log/sign/login.dart';
 import 'package:blood_donar/screenFunction/secreens/HomePage.dart';
+import 'package:blood_donar/screenFunction/secreens/blood%20request.dart';
+import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/blood%20request/near_request.dart';
 import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/find%20Donar/find_donar.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +35,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/home': (context) => const Homepage(),
         '/findDonor': (context) => const FindDonorScreen(),
+        '/requestlist': (context) => const nearRequest(),
+        '/addrequest': (context) => const BloodRequest(),
       },
     );
   }

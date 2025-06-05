@@ -42,6 +42,7 @@ class _ProfilePage1State extends State<ProfilePage1> {
 
   Map<String, List<String>> citiesByCountry = {
     'Bangladesh': [
+      'kushtia',
       'Barisal',
       'Chittagong',
       'Dhaka',

@@ -23,6 +23,7 @@ class _BloodRequeststate extends State<BloodRequest> {
   String? _selectedDistrict;
   String? _selectedBloodGroup;
   String? _selectedAmount;
+  String? _selectedCondition; // New condition field
   bool _isUrgent = false;
 
   List<String> districts = [
@@ -31,15 +32,27 @@ class _BloodRequeststate extends State<BloodRequest> {
     'Khulna',
     'Barisal',
     'Sylhet'
+    
   ];
+
   List<String> bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
   List<String> bloodAmounts = ['1 Bag', '2 Bags', '3 Bags', '4 Bags'];
+
+  List<String> urgentConditions = [
+    'Trauma',
+    'Surgery',
+    'Cancer',
+    'Anemia',
+    'Childbirth',
+    'Other'
+  ];
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate() &&
         _selectedDistrict != null &&
         _selectedBloodGroup != null &&
-        _selectedAmount != null) {
+        _selectedAmount != null &&
+        _selectedCondition != null) {
       try {
         final currentUser = FirebaseAuth.instance.currentUser;
 
@@ -48,11 +61,13 @@ class _BloodRequeststate extends State<BloodRequest> {
           "fullName": _fullNameController.text.trim(),
           "phone": "+880${_phoneController.text.trim()}",
           "district": _selectedDistrict,
+        //  "condition": _conditionController.text.trim(),
           "bloodGroup": _selectedBloodGroup,
           "amount": _selectedAmount,
           "date": _dateController.text.trim(),
           "hospital": _hospitalController.text.trim(),
           "reason": _reasonController.text.trim(),
+          "condition": _selectedCondition,
           "isUrgent": _isUrgent,
           "timestamp": FieldValue.serverTimestamp(),
         });
@@ -66,6 +81,7 @@ class _BloodRequeststate extends State<BloodRequest> {
           _selectedDistrict = null;
           _selectedBloodGroup = null;
           _selectedAmount = null;
+          _selectedCondition = null;
           _isUrgent = false;
         });
       } catch (e) {
@@ -94,7 +110,6 @@ class _BloodRequeststate extends State<BloodRequest> {
           ),
         ),
         centerTitle: true,
-        // elevation: 0,
       ),
       extendBodyBehindAppBar: true,
       body: Padding(
@@ -118,6 +133,10 @@ class _BloodRequeststate extends State<BloodRequest> {
                   (val) {
                 setState(() => _selectedAmount = val);
               }),
+              _buildDropdown("Condition", urgentConditions, _selectedCondition,
+                  (val) {
+                setState(() => _selectedCondition = val);
+              }),
               _buildTextField("Phone Number (without +880)", _phoneController,
                   keyboard: TextInputType.phone),
               _buildTextField("Date (DD/MM/YYYY)", _dateController),
@@ -140,8 +159,6 @@ class _BloodRequeststate extends State<BloodRequest> {
                   Switch(
                     value: _isUrgent,
                     activeColor: Colors.red,
-                    //   inactiveThumbColor: Colors.grey[300],
-                    // inactiveTrackColor: Colors.red[100],
                     onChanged: (val) => setState(() => _isUrgent = val),
                   ),
                 ],
@@ -175,9 +192,6 @@ class _BloodRequeststate extends State<BloodRequest> {
       ),
     );
   }
-
-  // Add this import at the top of your file:
-  // import 'package:animation_do/animation_do.dart';
 
   Widget _buildTextField(String label, TextEditingController controller,
       {TextInputType keyboard = TextInputType.text}) {

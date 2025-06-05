@@ -211,9 +211,9 @@ class _EditRequestScreenState extends State<EditRequestScreen> {
             FadeInUp(
               duration: Duration(milliseconds: 400),
               child: CheckboxListTile(
-                fillColor: MaterialStateProperty.resolveWith<Color?>(
-                  (Set<MaterialState> states) {
-                    if (states.contains(MaterialState.selected)) {
+                fillColor: WidgetStateProperty.resolveWith<Color?>(
+                  (Set<WidgetState> states) {
+                    if (states.contains(WidgetState.selected)) {
                       return Colors.redAccent;
                     }
                     return Colors.grey[200];

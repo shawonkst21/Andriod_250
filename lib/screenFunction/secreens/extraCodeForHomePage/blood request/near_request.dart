@@ -174,7 +174,7 @@ class _FindDonorScreenState extends State<nearRequest> {
       },
     );
   }
-
+//!main part of this page .............................................
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -204,6 +204,7 @@ class _FindDonorScreenState extends State<nearRequest> {
             ),
         ],
       ),
+      //! StreamBuilder to fetch data from Firestore..............(1)
       body: StreamBuilder(
         stream: FirebaseFirestore.instance.collection("requests").snapshots(),
         builder: (context, snapshot) {
@@ -236,7 +237,7 @@ class _FindDonorScreenState extends State<nearRequest> {
           if (requests.isEmpty) {
             return const Center(child: Text("No request match your search."));
           }
-
+            //! Displaying the list of requests.....(2)
           return ListView(
             children: requests.map((doc) {
               final data = doc.data();
@@ -318,7 +319,7 @@ class _FindDonorScreenState extends State<nearRequest> {
       ),
     );
   }
-
+//! Function to show user's own requests............(3).....................
   void _showUserRequests() {
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
 

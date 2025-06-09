@@ -8,37 +8,23 @@ import 'package:animate_do/animate_do.dart';
 import 'package:location/location.dart';
 import 'package:lottie/lottie.dart'; // <-- added for location
 
-class ProfilePage1 extends StatefulWidget {
-  const ProfilePage1({super.key});
+class Organizationinfo extends StatefulWidget {
+  const Organizationinfo({super.key});
 
   @override
-  State<ProfilePage1> createState() => _ProfilePage1State();
+  State<Organizationinfo> createState() => _ProfilePage1State();
 }
 
-class _ProfilePage1State extends State<ProfilePage1> {
+class _ProfilePage1State extends State<Organizationinfo> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _totalDonar = TextEditingController();
 
-  String? selectedBloodGroup;
   String? selectedCountry;
   String? selectedCity;
-  DateTime? selectedDonationDate;
-
-  double? latitude; // <-- new
-  double? longitude; // <-- new
 
   bool isFormValid = false;
 
-  final List<String> bloodGroups = [
-    'A+',
-    'A-',
-    'B+',
-    'B-',
-    'AB+',
-    'AB-',
-    'O+',
-    'O-'
-  ];
   final List<String> countries = ['Bangladesh'];
 
   Map<String, List<String>> citiesByCountry = {
@@ -60,17 +46,15 @@ class _ProfilePage1State extends State<ProfilePage1> {
     super.initState();
     _nameController.addListener(_checkFormValidity);
     _phoneController.addListener(_checkFormValidity);
-    _fetchLocation();
+    _totalDonar.addListener(_checkFormValidity);
   }
 
   void _checkFormValidity() {
     final valid = _nameController.text.isNotEmpty &&
         _phoneController.text.isNotEmpty &&
-        selectedBloodGroup != null &&
+        _totalDonar.text.isNotEmpty &&
         selectedCountry != null &&
-        selectedCity != null &&
-        selectedDonationDate != null;
-
+        selectedCity != null;
     if (valid != isFormValid) {
       setState(() {
         isFormValid = valid;
@@ -78,59 +62,14 @@ class _ProfilePage1State extends State<ProfilePage1> {
     }
   }
 
-  Future<void> _fetchLocation() async {
-    try {
-      Location location = Location();
-      bool serviceEnabled = await location.serviceEnabled();
-      if (!serviceEnabled) {
-        serviceEnabled = await location.requestService();
-      }
-      PermissionStatus permissionGranted = await location.hasPermission();
-      if (permissionGranted == PermissionStatus.denied) {
-        permissionGranted = await location.requestPermission();
-      }
-      if (permissionGranted == PermissionStatus.granted) {
-        final locData = await location.getLocation();
-        setState(() {
-          latitude = locData.latitude;
-          longitude = locData.longitude;
-        });
-      }
-    } catch (e) {
-      print("Location Error: $e");
-    }
-  }
-
-  Future<void> _pickDonationDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDonationDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
-    );
-
-    if (picked != null) {
-      setState(() {
-        selectedDonationDate = picked;
-      });
-      _checkFormValidity();
-    }
-  }
-
   Future<void> _saveToFirestore() async {
     try {
       final uid = FirebaseAuth.instance.currentUser!.uid;
-      await FirebaseFirestore.instance.collection('users').doc(uid).set({
+      await FirebaseFirestore.instance.collection('organization').doc(uid).set({
         'name': _nameController.text,
         'phone': _phoneController.text,
-        'bloodGroup': selectedBloodGroup,
         'country': selectedCountry,
         'city': selectedCity,
-        'lastDonationDate': selectedDonationDate!.toIso8601String(),
-        'timestamp': FieldValue.serverTimestamp(),
-        'location': latitude != null && longitude != null
-            ? {'latitude': latitude, 'longitude': longitude}
-            : null,
       }, SetOptions(merge: true));
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -151,6 +90,7 @@ class _ProfilePage1State extends State<ProfilePage1> {
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
+    _totalDonar.dispose();
     super.dispose();
   }
 
@@ -171,7 +111,7 @@ class _ProfilePage1State extends State<ProfilePage1> {
           children: [
             FadeInDown(
               duration: Duration(milliseconds: 400),
-              child: Text("Profile Setup",
+              child: Text("organization Info",
                   style: GoogleFonts.poppins(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -182,7 +122,7 @@ class _ProfilePage1State extends State<ProfilePage1> {
             FadeInDown(
               duration: Duration(milliseconds: 500),
               child: Text(
-                "Almost done :) Fill up your profile. It's just 3 easy steps.",
+                "Almost done :) Fill up the form below to complete your organization profile.",
                 style: GoogleFonts.poppins(fontSize: 14, color: Colors.black54),
               ),
             ),
@@ -192,17 +132,22 @@ class _ProfilePage1State extends State<ProfilePage1> {
               child: Center(
                 child: Column(
                   children: [
-                    Lottie.asset('assets/personinfo.json', height: 120)
+                    Lottie.asset(
+                      'assets/orga.json',
+                      // width: 120,
+                      height: 140,
+                    ),
+                    //  SizedBox(height: 8),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 20),
 
             // Name
             FadeInUp(
               duration: Duration(milliseconds: 800),
-              child: _buildTextField(_nameController, "Full Name"),
+              child: _buildTextField(_nameController, "Organization Name"),
             ),
             SizedBox(height: 10),
 
@@ -213,23 +158,14 @@ class _ProfilePage1State extends State<ProfilePage1> {
                   inputType: TextInputType.phone),
             ),
             SizedBox(height: 10),
-
-            // Blood Group
             FadeInUp(
-              duration: Duration(milliseconds: 900),
-              child: _buildDropdown(
-                hint: 'Select Blood Group',
-                value: selectedBloodGroup,
-                items: bloodGroups,
-                onChanged: (val) {
-                  setState(() {
-                    selectedBloodGroup = val;
-                    _checkFormValidity();
-                  });
-                },
-              ),
+              duration: Duration(milliseconds: 850),
+              child: _buildTextField(_totalDonar, "Total Donars",
+                  inputType: TextInputType.phone),
             ),
             SizedBox(height: 10),
+
+            // Blood Group
 
             // Country
             FadeInUp(
@@ -266,42 +202,8 @@ class _ProfilePage1State extends State<ProfilePage1> {
                 },
               ),
             ),
-            SizedBox(height: 10),
-
+            SizedBox(height: 80),
             // Last Donation Date
-            FadeInUp(
-              duration: Duration(milliseconds: 1050),
-              child: GestureDetector(
-                onTap: _pickDonationDate,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    border: Border.all(color: Colors.redAccent),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        selectedDonationDate == null
-                            ? 'Select Last Donation Date'
-                            : DateFormat.yMMMd().format(selectedDonationDate!),
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: selectedDonationDate == null
-                              ? Colors.black54
-                              : Colors.black,
-                        ),
-                      ),
-                      Icon(Icons.calendar_today, color: Colors.redAccent),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 30),
-
             // Continue Button
             FadeInUp(
               duration: Duration(milliseconds: 1100),
@@ -316,7 +218,7 @@ class _ProfilePage1State extends State<ProfilePage1> {
                         borderRadius: BorderRadius.circular(12)),
                   ),
                   child: Text(
-                    'Continue',
+                    'save & Continue',
                     style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

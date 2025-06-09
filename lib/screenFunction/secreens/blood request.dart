@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lottie/lottie.dart';
 
 class BloodRequest extends StatefulWidget {
   const BloodRequest({super.key});
@@ -32,7 +33,6 @@ class _BloodRequeststate extends State<BloodRequest> {
     'Khulna',
     'Barisal',
     'Sylhet'
-    
   ];
 
   List<String> bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
@@ -61,7 +61,7 @@ class _BloodRequeststate extends State<BloodRequest> {
           "fullName": _fullNameController.text.trim(),
           "phone": "+880${_phoneController.text.trim()}",
           "district": _selectedDistrict,
-        //  "condition": _conditionController.text.trim(),
+          //  "condition": _conditionController.text.trim(),
           "bloodGroup": _selectedBloodGroup,
           "amount": _selectedAmount,
           "date": _dateController.text.trim(),
@@ -100,7 +100,8 @@ class _BloodRequeststate extends State<BloodRequest> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
+      /*   appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: Text(
           "Make a Request For Blood",
           style: GoogleFonts.poppins(
@@ -110,7 +111,7 @@ class _BloodRequeststate extends State<BloodRequest> {
           ),
         ),
         centerTitle: true,
-      ),
+      ),*/
       extendBodyBehindAppBar: true,
       body: Padding(
         padding: EdgeInsets.only(left: 16, right: 16),
@@ -118,6 +119,27 @@ class _BloodRequeststate extends State<BloodRequest> {
           key: _formKey,
           child: ListView(
             children: [
+              Lottie.asset(
+                'assets/addlist.json',
+                height: 150,
+              ),
+              Center(
+                child: Text(
+                  "Make a Request For Blood",
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    color: const Color.fromARGB(255, 125, 11, 2),
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+              Divider(
+                color: Colors.red[200],
+                thickness: 1.2,
+                height: 24,
+                indent: 20, // left padding
+                endIndent: 20, // right padding
+              ),
               _buildTextField("Full Name", _fullNameController),
               _buildDropdown("Select District", districts, _selectedDistrict,
                   (val) {

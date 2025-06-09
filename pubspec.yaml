@@ -103,6 +103,13 @@ flutter:
   - assets/blob.png
   - assets/ok.jpg
   - assets/search.json
+  - assets/orga.json
+  - assets/orga2.json
+  - assets/marker.json
+  - assets/personinfo.json
+  - assets/addlist.json
+  - assets/addloading.json
+  - assets/image.json
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -297,6 +297,7 @@ class _AllButtonForBloodDonationState extends State<AllButtonForBloodDonation> {
                   child: GestureDetector(
                     onTap: () {
                       // Handle view button tap
+                      Navigator.pushNamed(context, '/organizationInfo');
                     },
                     child: AnimatedContainer(
                       //width: 30,

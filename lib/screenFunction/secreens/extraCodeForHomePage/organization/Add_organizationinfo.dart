@@ -1,5 +1,3 @@
-import 'package:blood_donar/demo/home.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -62,8 +60,8 @@ class _ProfilePage1State extends State<Organizationinfo> {
 
   Future<void> _saveToFirestore() async {
     try {
-      final uid = FirebaseAuth.instance.currentUser!.uid;
-      await FirebaseFirestore.instance.collection('organization').doc(uid).set({
+     // final uid = FirebaseAuth.instance.currentUser!.uid;
+      await FirebaseFirestore.instance.collection('organization').doc().set({
         'name': _nameController.text,
         'phone': _phoneController.text,
         'country': selectedCountry,
@@ -74,10 +72,7 @@ class _ProfilePage1State extends State<Organizationinfo> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Data saved successfully!")),
       );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => homePage()),
-      );
+      Navigator.pop(context);
     } catch (e) {
       print("Error: $e");
       ScaffoldMessenger.of(context)

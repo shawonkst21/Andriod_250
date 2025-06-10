@@ -20,7 +20,7 @@ class _Organization_listState extends State<Organization_list> {
         title: Text(
           'Organization List',
           style: GoogleFonts.poppins(
-            color: Colors.redAccent,
+            color: const Color.fromARGB(255, 125, 11, 2),
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -59,6 +59,14 @@ class _Organization_listState extends State<Organization_list> {
             }).toList(),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/organizationInfo');
+        },
+        backgroundColor: Color.fromARGB(255, 125, 11, 2),
+        child: const Icon(Icons.add, color: Colors.white),
+        tooltip: 'Add Organization',
       ),
     );
   }

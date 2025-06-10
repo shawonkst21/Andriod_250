@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:icons_flutter/icons_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class OrgaCard extends StatelessWidget {
@@ -37,7 +38,8 @@ class OrgaCard extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         title: Text('Organization: $name'),
-        content: Text('Total Donors: $totaldonars\nPhone: $phone\nAddress: $city, $country'),
+        content: Text(
+            'Total Donors: $totaldonars\nPhone: $phone\nAddress: $city, $country'),
       ),
     );
   }
@@ -47,59 +49,142 @@ class OrgaCard extends StatelessWidget {
     final address = "$city, $country";
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.grey[100],
+          image: const DecorationImage(
+            image: AssetImage('assets/bg.jpg'),
+            fit: BoxFit.cover,
+          ),
+          // color: Colors.grey[100],
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withOpacity(0.2),
               blurRadius: 6,
               offset: const Offset(0, 3),
             ),
           ],
         ),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Icon(
+                  FlutterIcons.group_faw,
+                  //  color: const Color.fromARGB(255, 125, 11, 2),
+                ),
+                SizedBox(
+                  width: 5,
+                ),
                 Expanded(
                   child: Text(
                     name.trim(),
                     style: GoogleFonts.poppins(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(255, 125, 11, 2),
                     ),
                     overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Text(
-                  '$totaldonars donors',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    color: Colors.redAccent,
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 6),
-            Text(
-              address,
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.grey[700],
-              ),
+            Row(
+              children: [
+                Icon(
+                  Icons.location_on,
+                  color: Colors.grey[700],
+                  size: 16,
+                ),
+                Text(
+                  address,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
+            Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Icon(
+                  Icons.phone,
+                  color: Colors.grey[700],
+                  size: 16,
+                ),
+                Text("Phone: $phone",
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey[700],
+                    )),
+                SizedBox(
+                  width: 60,
+                ),
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: showSMSOptions,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.pink.shade50,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.message,
+                          color: Colors.red,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    GestureDetector(
+                      onTap: dialPhone,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.pink.shade50,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.call,
+                          color: Colors.red,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            // const SizedBox(height: 10),
+            Row(
+              children: [
+                Icon(
+                  Icons.people,
+                  color: Colors.grey[700],
+                  size: 16,
+                ),
+                Text(
+                  ': $totaldonars donors',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey[700],
+                    //fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
 
             // Actions
-            Row(
+            /*  Row(
               children: [
                 GestureDetector(
                   onTap: showSMSOptions,
@@ -138,7 +223,7 @@ class OrgaCard extends StatelessWidget {
             const SizedBox(height: 10),
 
             // View Details Button
-            Align(
+              Align(
               alignment: Alignment.centerRight,
               child: OutlinedButton(
                 onPressed: () => showDonorDetails(context),
@@ -152,7 +237,7 @@ class OrgaCard extends StatelessWidget {
                   style: TextStyle(color: Colors.grey),
                 ),
               ),
-            ),
+            ),*/
           ],
         ),
       ),

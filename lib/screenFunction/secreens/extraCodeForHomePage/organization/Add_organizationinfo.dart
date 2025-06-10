@@ -3,9 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:location/location.dart';
 import 'package:lottie/lottie.dart'; // <-- added for location
 
 class Organizationinfo extends StatefulWidget {
@@ -70,6 +68,7 @@ class _ProfilePage1State extends State<Organizationinfo> {
         'phone': _phoneController.text,
         'country': selectedCountry,
         'city': selectedCity,
+        'totalDonars': _totalDonar.text,
       }, SetOptions(merge: true));
 
       ScaffoldMessenger.of(context).showSnackBar(

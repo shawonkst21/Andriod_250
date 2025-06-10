@@ -119,52 +119,116 @@ class _BloodRequeststate extends State<BloodRequest> {
           key: _formKey,
           child: ListView(
             children: [
-              Lottie.asset(
-                'assets/addlist.json',
-                height: 150,
+              SizedBox(
+                height: 40,
               ),
-              Center(
+              FadeInDown(
+                duration: Duration(milliseconds: 400),
+                child: Text("Making a Request",
+                    style: GoogleFonts.poppins(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(255, 125, 11, 2),
+                    )),
+              ),
+              FadeInDown(
+                duration: Duration(milliseconds: 500),
                 child: Text(
-                  "Make a Request For Blood",
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    color: const Color.fromARGB(255, 125, 11, 2),
-                    fontSize: 15,
+                  "Almost done :) Fill up the form below to complete your blood request.",
+                  style:
+                      GoogleFonts.poppins(fontSize: 14, color: Colors.black54),
+                ),
+              ),
+              // SizedBox(height: 25),
+              ZoomIn(
+                duration: Duration(milliseconds: 600),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Lottie.asset('assets/addlist.json', height: 150)
+                    ],
                   ),
                 ),
               ),
-              Divider(
+              /*  Divider(
                 color: Colors.red[200],
                 thickness: 1.2,
                 height: 24,
                 indent: 20, // left padding
                 endIndent: 20, // right padding
+              ),*/
+              SizedBox(height: 20),
+              FadeInUp(
+                  duration: Duration(milliseconds: 800),
+                  child: _buildTextField("Paitent Name", _fullNameController)),
+              const SizedBox(height: 10),
+
+              FadeInUp(
+                duration: Duration(milliseconds: 850),
+                child: _buildDropdown(
+                    "Select District", districts, _selectedDistrict, (val) {
+                  setState(() => _selectedDistrict = val);
+                }),
               ),
-              _buildTextField("Full Name", _fullNameController),
-              _buildDropdown("Select District", districts, _selectedDistrict,
-                  (val) {
-                setState(() => _selectedDistrict = val);
-              }),
-              _buildDropdown(
-                  "Required Blood Group", bloodGroups, _selectedBloodGroup,
-                  (val) {
-                setState(() => _selectedBloodGroup = val);
-              }),
-              _buildDropdown(
-                  "Amount of Required Blood", bloodAmounts, _selectedAmount,
-                  (val) {
-                setState(() => _selectedAmount = val);
-              }),
-              _buildDropdown("Condition", urgentConditions, _selectedCondition,
-                  (val) {
-                setState(() => _selectedCondition = val);
-              }),
-              _buildTextField("Phone Number (without +880)", _phoneController,
-                  keyboard: TextInputType.phone),
-              _buildTextField("Date (DD/MM/YYYY)", _dateController),
-              _buildTextField(
-                  "Hospital Info (Address / Ward / Bed)", _hospitalController),
-              _buildTextField("Why Do You Need Blood?", _reasonController),
+              const SizedBox(height: 10),
+
+              FadeInUp(
+                duration: Duration(milliseconds: 900),
+                child: _buildDropdown(
+                    "Required Blood Group", bloodGroups, _selectedBloodGroup,
+                    (val) {
+                  setState(() => _selectedBloodGroup = val);
+                }),
+              ),
+              const SizedBox(height: 10),
+
+              FadeInUp(
+                duration: Duration(milliseconds: 950),
+                child: _buildDropdown(
+                    "Amount of Required Blood", bloodAmounts, _selectedAmount,
+                    (val) {
+                  setState(() => _selectedAmount = val);
+                }),
+              ),
+              const SizedBox(height: 10),
+
+              FadeInUp(
+                duration: Duration(milliseconds: 1000),
+                child: _buildDropdown(
+                    "Condition", urgentConditions, _selectedCondition, (val) {
+                  setState(() => _selectedCondition = val);
+                }),
+              ),
+              const SizedBox(height: 10),
+
+              FadeInUp(
+                duration: Duration(milliseconds: 1050),
+                child: _buildTextField(
+                  "Phone Number (without +880)",
+                  _phoneController,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              FadeInUp(
+                  duration: Duration(milliseconds: 1100),
+                  child: _buildTextField("Date (DD/MM/YYYY)", _dateController)),
+              SizedBox(
+                height: 10,
+              ),
+              FadeInUp(
+                duration: Duration(milliseconds: 1150),
+                child: _buildTextField("Hospital Info (Address / Ward / Bed)",
+                    _hospitalController),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              FadeInUp(
+                  duration: Duration(milliseconds: 1200),
+                  child: _buildTextField(
+                      "Why Do You Need Blood?", _reasonController)),
               SizedBox(height: 10),
               Row(
                 children: [
@@ -215,6 +279,7 @@ class _BloodRequeststate extends State<BloodRequest> {
     );
   }
 
+/*
   Widget _buildTextField(String label, TextEditingController controller,
       {TextInputType keyboard = TextInputType.text}) {
     return Padding(
@@ -265,9 +330,25 @@ class _BloodRequeststate extends State<BloodRequest> {
         ),
       ),
     );
+  }*/
+  Widget _buildTextField(String hint, TextEditingController controller,
+      {TextInputType? inputType}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        border: Border.all(color: Colors.redAccent),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.only(left: 20),
+      child: TextField(
+        controller: controller,
+        keyboardType: inputType ?? TextInputType.text,
+        decoration: InputDecoration(border: InputBorder.none, hintText: hint),
+      ),
+    );
   }
 
-  Widget _buildDropdown(String label, List<String> items, String? selectedValue,
+  /* Widget _buildDropdown(String label, List<String> items, String? selectedValue,
       Function(String?) onChanged) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8),
@@ -323,6 +404,40 @@ class _BloodRequeststate extends State<BloodRequest> {
           dropdownColor: Colors.red[50],
           icon: Icon(Icons.keyboard_arrow_down, color: Colors.red[900]),
           validator: (value) => value == null ? 'Required' : null,
+        ),
+      ),
+    );
+  }
+  */
+  Widget _buildDropdown(
+    String hint,
+    List<String> items,
+    String? value,
+    void Function(String?)? onChanged,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        border: Border.all(color: Colors.redAccent),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          isExpanded: true,
+          hint: Text(hint),
+          value: value,
+          icon: Icon(Icons.arrow_drop_down, color: Colors.redAccent),
+          iconSize: 24,
+          elevation: 16,
+          style: TextStyle(color: Colors.black87, fontSize: 16),
+          onChanged: onChanged,
+          items: items.map<DropdownMenuItem<String>>((String val) {
+            return DropdownMenuItem<String>(
+              value: val,
+              child: Text(val),
+            );
+          }).toList(),
         ),
       ),
     );

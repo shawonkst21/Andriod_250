@@ -297,7 +297,7 @@ class _AllButtonForBloodDonationState extends State<AllButtonForBloodDonation> {
                   child: GestureDetector(
                     onTap: () {
                       // Handle view button tap
-                      Navigator.pushNamed(context, '/organizationInfo');
+                      Navigator.pushNamed(context, '/organizationList');
                     },
                     child: AnimatedContainer(
                       //width: 30,
@@ -335,12 +335,13 @@ class _AllButtonForBloodDonationState extends State<AllButtonForBloodDonation> {
                   top: 0,
                   right: 0,
                   child: SizedBox(
-                    height: 80,
+                    height: 70,
                     width: 80,
                     child: Lottie.asset(
-                      'assets/emergency.json',
+                      'assets/orga.json',
                       repeat: true,
                       animate: true,
+                      //   height: 150,
                     ),
                   ),
                 ),

@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -134,166 +135,185 @@ class Donarlist extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-      child: Stack(
-        children: [
-          Container(
-            height: 150,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 6,
-                  offset: Offset(0, 3),
+    return ZoomIn(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+        child: Stack(
+          children: [
+            Container(
+              height: 135,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                image: const DecorationImage(
+                  image: AssetImage('assets/bg.jpg'),
+                  fit: BoxFit.cover,
                 ),
-              ],
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 6,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Positioned(
-              top: 16,
-              left: 12,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      'assets/shawon.jpg',
-                      height: 60,
-                      width: 60,
-                      fit: BoxFit.cover,
+            Positioned(
+                top: 16,
+                left: 12,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Image.asset(
+                        'assets/shawon.jpg',
+                        height: 55,
+                        width: 55,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  ],
+                )),
+            Positioned(
+                top: 15,
+                left: 80,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          name,
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 125, 11, 2),
+                          ),
+                        ),
+                      ],
                     ),
-                  )
-                ],
-              )),
-          Positioned(
-              top: 15,
-              left: 80,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        name,
-                        style: GoogleFonts.poppins(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                    SizedBox(height: 1),
+                    Text(
+                      address,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Row(
+                      children: [
+                        Text(
+                          isAvailable ? "🟢 Available " : "🔴 Not available",
+                          style: TextStyle(
+                            color: isAvailable ? Colors.green : Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        bloodGroup,
-                        style: GoogleFonts.poppins(
-                          fontSize: 20,
-                          color: Colors.redAccent,
-                          fontWeight: FontWeight.bold,
-                          
-                        ),
-                      ),
-                    ],
+                        SizedBox(width: isAvailable ? 50 : 30),
+
+                        // Message Button
+                      ],
+                    )
+                  ],
+                )),
+            Positioned(
+                bottom: 4,
+                left: 12,
+                child: OutlinedButton(
+                  onPressed: () => showDonorDetails(context),
+                  style: OutlinedButton.styleFrom(
+                    shape: const StadiumBorder(),
+                    side: BorderSide(color: Colors.grey),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                    minimumSize: Size(0, 30), // Decreased height
                   ),
-                  SizedBox(height: 2),
-                  Text(
-                    address,
+                  child: Text(
+                    'View Details',
                     style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
+                        color: Colors.grey,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12),
                   ),
-                  //SizedBox(height: 2),
-                  Row(
-                    children: [
-                      Text(
-                        isAvailable ? "🟢 Available " : "🔴 Not available",
-                        style: TextStyle(
-                          color: isAvailable ? Colors.green : Colors.red,
-                          fontWeight: FontWeight.bold,
+                )),
+            Positioned(
+                top: 15,
+                right: 20,
+                child: Column(
+                  children: [
+                    Text(
+                      bloodGroup,
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                )),
+            Positioned(
+                top: 55,
+                right: 20,
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        if (isAvailable) {
+                          showSMSOptions(context);
+                        } else {
+                          final snackBar = SnackBar(
+                            elevation: 0,
+                            behavior: SnackBarBehavior.floating,
+                            backgroundColor: Colors.transparent,
+                            content: AwesomeSnackbarContent(
+                              title: 'Unavailable',
+                              message: 'This donor is not available right now.',
+                              contentType: ContentType.failure,
+                            ),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.pink.shade50,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.message,
+                          color: Colors.black,
+                          size: 20,
                         ),
                       ),
-                      SizedBox(width: isAvailable ? 50 : 30),
+                    ),
 
-                      // Message Button
-                      GestureDetector(
-                        onTap: () {
-                          if (isAvailable) {
-                            showSMSOptions(context);
-                          } else {
-                            final snackBar = SnackBar(
-                              elevation: 0,
-                              behavior: SnackBarBehavior.floating,
-                              backgroundColor: Colors.transparent,
-                              content: AwesomeSnackbarContent(
-                                title: 'Unavailable',
-                                message:
-                                    'This donor is not available right now.',
-                                contentType: ContentType.failure,
-                              ),
-                            );
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackBar);
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.pink.shade50,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.message,
-                            color: Colors.red,
-                            size: 20,
-                          ),
+                    const SizedBox(width: 10),
+
+                    // Call Button
+                    GestureDetector(
+                      onTap: isAvailable ? dialPhone : null,
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.pink.shade50,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.call,
+                          color: Colors.black,
+                          size: 20,
                         ),
                       ),
-
-                      const SizedBox(width: 10),
-
-                      // Call Button
-                      GestureDetector(
-                        onTap: isAvailable ? dialPhone : null,
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.pink.shade50,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.call,
-                            color: Colors.red,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              )),
-          Positioned(
-              bottom: 5,
-              left: 12,
-              child: OutlinedButton(
-                onPressed: () => showDonorDetails(context),
-                style: OutlinedButton.styleFrom(
-                  shape: const StadiumBorder(), // Rounded pill shape
-                  side: BorderSide(color: Colors.grey.shade300), // Light border
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-                ),
-                child: const Text(
-                  'View Details',
-                  style: TextStyle(
-                      color: Colors.grey), // Optional: match text color
-                ),
-              ))
-        ],
+                    ),
+                  ],
+                ))
+          ],
+        ),
       ),
     );
   }

@@ -65,8 +65,8 @@ class _Organization_listState extends State<Organization_list> {
           Navigator.pushNamed(context, '/organizationInfo');
         },
         backgroundColor: Color.fromARGB(255, 125, 11, 2),
-        child: const Icon(Icons.add, color: Colors.white),
         tooltip: 'Add Organization',
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

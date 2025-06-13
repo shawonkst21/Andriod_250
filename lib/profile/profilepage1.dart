@@ -16,6 +16,20 @@ class ProfilePage1 extends StatefulWidget {
 }
 
 class _ProfilePage1State extends State<ProfilePage1> {
+  bool isAvailableForDonation(dynamic lastDonationDate) {
+    DateTime lastDate;
+
+    if (lastDonationDate is String) {
+      lastDate = DateTime.parse(lastDonationDate);
+    } else if (lastDonationDate is Timestamp) {
+      lastDate = lastDonationDate.toDate();
+    } else {
+      return false;
+    }
+
+    return DateTime.now().difference(lastDate).inDays >= 90;
+  }
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
@@ -120,13 +134,18 @@ class _ProfilePage1State extends State<ProfilePage1> {
   Future<void> _saveToFirestore() async {
     try {
       final uid = FirebaseAuth.instance.currentUser!.uid;
+      // Determine if the user is available to donate
+      final now = DateTime.now();
+      final daysSinceDonation = now.difference(selectedDonationDate!).inDays;
+      final isAvailable = daysSinceDonation >= 90;
       await FirebaseFirestore.instance.collection('users').doc(uid).set({
         'name': _nameController.text,
         'phone': _phoneController.text,
         'bloodGroup': selectedBloodGroup,
         'country': selectedCountry,
         'city': selectedCity,
-        'lastDonationDate': selectedDonationDate!.toIso8601String(),
+        'available': isAvailable,
+        'lastDonationDate': selectedDonationDate,
         'timestamp': FieldValue.serverTimestamp(),
         'location': latitude != null && longitude != null
             ? {'latitude': latitude, 'longitude': longitude}
@@ -137,8 +156,8 @@ class _ProfilePage1State extends State<ProfilePage1> {
         SnackBar(content: Text("Data saved successfully!")),
       );
       Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => homePage()),
+       context,
+       MaterialPageRoute(builder: (context) => homePage()),
       );
     } catch (e) {
       print("Error: $e");

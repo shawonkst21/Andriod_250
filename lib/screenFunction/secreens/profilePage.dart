@@ -2,11 +2,13 @@ import 'dart:typed_data';
 import 'package:animate_do/animate_do.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_flutter/icons_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'dart:io';
 
 class Profilepage extends StatefulWidget {
   const Profilepage({super.key});
@@ -93,14 +95,109 @@ class _ProfileState extends State<Profilepage> {
   String address = '';
   String phone = '';
   String formattedDate = '';
+  //!setting functionality................
+  bool _notificationsEnabled = true;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   @override
   void initState() {
     super.initState();
     fetchUserData();
+    loadNotificationPreference();
   }
 
+  Future<void> loadNotificationPreference() async {
+    final uid = _auth.currentUser?.uid;
+    if (uid != null) {
+      final doc = await _firestore.collection('users').doc(uid).get();
+      if (doc.exists) {
+        final isOn = doc.data()?['notificationsEnabled'] ?? true;
+        setState(() {
+          _notificationsEnabled = isOn;
+        });
+
+        // Sync FCM topic
+        if (isOn) {
+          await FirebaseMessaging.instance.subscribeToTopic('all_users');
+        } else {
+          await FirebaseMessaging.instance.unsubscribeFromTopic('all_users');
+        }
+      }
+    }
+  }
+
+  Future<void> updateNotificationPreference(bool value) async {
+    final uid = _auth.currentUser?.uid;
+    if (uid != null) {
+      setState(() {
+        _notificationsEnabled = value;
+      });
+
+      await _firestore.collection('users').doc(uid).set({
+        'notificationsEnabled': value,
+      }, SetOptions(merge: true));
+
+      if (value) {
+        await FirebaseMessaging.instance.subscribeToTopic('all_users');
+      } else {
+        await FirebaseMessaging.instance.unsubscribeFromTopic('all_users');
+      }
+    }
+  }
+  //! bottom sheet....................
+
+  void showSettingsOptions() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
+      builder: (_) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.person_outline),
+                title: Text('Edit Profile', style: GoogleFonts.poppins()),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/editProfile');
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.star),
+                title: Text('Rating My App', style: GoogleFonts.poppins()),
+              ),
+              ListTile(
+                leading: const Icon(Icons.language),
+                title: Text('Language', style: GoogleFonts.poppins()),
+                onTap: () {
+                  Navigator.pop(context);
+                  // Add language picker navigation here
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.exit_to_app, color: Colors.red),
+                title:
+                    Text('Exit', style: GoogleFonts.poppins(color: Colors.red)),
+                onTap: () {
+                  Navigator.pop(context); // Close bottom sheet
+                  Future.delayed(const Duration(milliseconds: 300), () {
+                    exit(0); // Terminates the app
+                  });
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+//!............................................................................
   // Image picker method
-  
 
   // Fetch user data from Firestore
   Future<void> fetchUserData() async {
@@ -196,7 +293,7 @@ class _ProfileState extends State<Profilepage> {
                       //bottom: 5,
                       right: 10,
                       child: IconButton(
-                          onPressed: () {},
+                          onPressed: showSettingsOptions,
                           icon: Icon(FlutterIcons.setting_ant)))
                 ],
               ),
@@ -227,7 +324,7 @@ class _ProfileState extends State<Profilepage> {
                       bottom: -15,
                       left: 70,
                       child: IconButton(
-                        onPressed:(){},
+                        onPressed: () {},
                         icon: const Icon(
                           FlutterIcons.camera_account_mco,
                           color: Color.fromARGB(255, 125, 11, 2),
@@ -650,6 +747,51 @@ class _ProfileState extends State<Profilepage> {
                   ),
                 ]),
               ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+                child: Container(
+                  width: double.infinity,
+                  height: 55,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(122, 240, 196, 196),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: Colors.red,
+                      width: 2,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.notifications_active_outlined,
+                                color: Colors.red),
+                            SizedBox(width: 10),
+                            Text(
+                              " Notification",
+                              style: GoogleFonts.poppins(fontSize: 14),
+                            ),
+                          ],
+                        ),
+                        Switch(
+                          value: _notificationsEnabled,
+                          activeColor: Colors.green,
+                          onChanged: (value) {
+                            setState(() {
+                              updateNotificationPreference(value);
+                            });
+                            // updateAvailability(value);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
               SizedBox(
                 height: 10,
               ),
@@ -657,7 +799,7 @@ class _ProfileState extends State<Profilepage> {
                 duration: const Duration(milliseconds: 400),
                 child: Center(
                   child: SizedBox(
-                    width: 100, // Makes the button expand horizontally
+                    width: 250, // Makes the button expand horizontally
                     height: 40, // Increases the button height
                     child: ElevatedButton(
                       onPressed: _showLogoutDialog,

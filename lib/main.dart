@@ -8,6 +8,7 @@ import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/find%20
 import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/notifications/all_notifcation.dart';
 import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/organization/listof_orga.dart';
 import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/organization/Add_organizationinfo.dart';
+import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/setting/setting_page.dart';
 import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/urgent%20Request/urgentReq.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,13 +19,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// Global navigator key for showing dialogs and navigation outside widget context
+//! Global navigator key for showing dialogs and navigation outside widget context
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-// Background message handler
+//! Background message handler
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print("📩 Handling background message: ${message.messageId}");
 }
 
 void main() async {
@@ -80,7 +80,6 @@ class _MyAppState extends State<MyApp> {
             (NotificationResponse response) async {
       final actionId = response.actionId;
       if (actionId == 'donate_action') {
-        print('💓 User tapped "I Can Donate" button');
         final FirebaseAuth auth = FirebaseAuth.instance;
         final user = auth.currentUser;
 
@@ -172,11 +171,24 @@ class _MyAppState extends State<MyApp> {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
 
-      // Get current user
+      //! Get current user
       final user = FirebaseAuth.instance.currentUser;
 
       if (notification != null && android != null && user != null) {
-        // 💾 Save notification to Firestore
+        // ✅ Check notification setting
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        final notificationsEnabled =
+            userDoc.data()?['notificationsEnabled'] ?? true;
+
+        if (!notificationsEnabled) {
+          print('🔕 Notifications are disabled by user. Skipping...');
+          return;
+        }
+        //!  Save notification to Firestore
         await FirebaseFirestore.instance.collection('notifications').add({
           'userId': user.uid,
           'title': notification.title ?? '',
@@ -219,7 +231,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      navigatorKey: navigatorKey, // << Important for dialogs & navigation
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       home: OnboardingScreen(),
       initialRoute: '/',
@@ -233,6 +245,7 @@ class _MyAppState extends State<MyApp> {
         '/organizationInfo': (context) => const Organizationinfo(),
         '/organizationList': (context) => const Organization_list(),
         '/NotificationScreen': (context) => const NotificationScreen(),
+        '/SettingsPage': (context) => const SettingsPage(),
       },
     );
   }

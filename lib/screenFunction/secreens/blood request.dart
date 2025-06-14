@@ -1,4 +1,5 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/notifications/Fcm_sender.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -46,7 +47,6 @@ class _BloodRequeststate extends State<BloodRequest> {
     'Childbirth',
     'Other'
   ];
-
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate() &&
         _selectedDistrict != null &&
@@ -55,13 +55,13 @@ class _BloodRequeststate extends State<BloodRequest> {
         _selectedCondition != null) {
       try {
         final currentUser = FirebaseAuth.instance.currentUser;
+        final docRef = FirebaseFirestore.instance.collection("requests").doc();
 
-        await FirebaseFirestore.instance.collection("requests").add({
+        await docRef.set ({
           "userId": currentUser?.uid,
           "fullName": _fullNameController.text.trim(),
           "phone": "+880${_phoneController.text.trim()}",
           "district": _selectedDistrict,
-          //  "condition": _conditionController.text.trim(),
           "bloodGroup": _selectedBloodGroup,
           "amount": _selectedAmount,
           "date": _dateController.text.trim(),
@@ -71,6 +71,18 @@ class _BloodRequeststate extends State<BloodRequest> {
           "isUrgent": _isUrgent,
           "timestamp": FieldValue.serverTimestamp(),
         });
+
+        //! ✅ Send notification if urgent
+        if (_isUrgent) {
+          await sendNotificationUsingV1API(
+            title: "🚨Urgent Need: $_selectedBloodGroup",
+            body: "Blood required urgently $_selectedAmount near your area!",
+            requestId: docRef.id,
+            requesterName: _fullNameController.text.trim(),
+            bloodGroup: _selectedBloodGroup!,
+            district: _selectedDistrict!,
+          );
+        }
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Request submitted successfully!')),
@@ -85,6 +97,7 @@ class _BloodRequeststate extends State<BloodRequest> {
           _isUrgent = false;
         });
       } catch (e) {
+        print("🔥 Error: $e");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to submit request')),
         );

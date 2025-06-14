@@ -1,7 +1,5 @@
 import 'dart:typed_data';
-
 import 'package:animate_do/animate_do.dart';
-import 'package:blood_donar/screenFunction/secreens/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -102,12 +100,7 @@ class _ProfileState extends State<Profilepage> {
   }
 
   // Image picker method
-  void selectImage() async {
-    Uint8List img = await pickImage(ImageSource.gallery);
-    setState(() {
-      _image = img;
-    });
-  }
+  
 
   // Fetch user data from Firestore
   Future<void> fetchUserData() async {
@@ -234,7 +227,7 @@ class _ProfileState extends State<Profilepage> {
                       bottom: -15,
                       left: 70,
                       child: IconButton(
-                        onPressed: selectImage,
+                        onPressed:(){},
                         icon: const Icon(
                           FlutterIcons.camera_account_mco,
                           color: Color.fromARGB(255, 125, 11, 2),

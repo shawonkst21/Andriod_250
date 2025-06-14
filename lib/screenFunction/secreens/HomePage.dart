@@ -1,4 +1,4 @@
-import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/Fcm_sender.dart';
+import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/notifications/My_response.dart';
 import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/buttonfunction.dart';
 import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/donateContainer.dart';
 import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/firstWelcome.dart';
@@ -52,14 +52,53 @@ class _HomepageState extends State<Homepage> {
             SizedBox(
               height: 30,
             ),
-            IconButton(
-              icon: Icon(Icons.notifications_none),
-              color: Colors.red,
-              iconSize: 30,
-              onPressed: () {
-                // Handle notification tap
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('notifications')
+                  .where('userId', isEqualTo: _auth.currentUser?.uid)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                int notifCount = snapshot.data?.docs.length ?? 0;
+
+                return Stack(
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        notifCount > 0
+                            ? Icons.notifications_active_rounded
+                            : Icons.notifications_none_outlined,
+                      ),
+                      color: Colors.red,
+                      iconSize: 30,
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/NotificationScreen');
+                      },
+                    ),
+                    if (notifCount > 0)
+                      Positioned(
+                        right: 4,
+                        top: 4,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            '$notifCount',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                );
               },
             ),
+
             //! first welcome Container and code in extra code folder and file name firstwelcome.dart
             WelcomeHomepage(),
             SizedBox(height: 20),
@@ -105,18 +144,26 @@ class _HomepageState extends State<Homepage> {
           ],
         ),
       ),
-     floatingActionButton: FloatingActionButton(
-  onPressed: () async {
-    await sendNotificationUsingV1API(
-      "Urgent Need",
-      "Blood required urgently near your area!",
-    );
-    print("🚀 Notification sent!");
-  },
-  child: Icon(Icons.send), // or any icon you like
-  tooltip: "Send Urgent Alert",
-),
-
+      floatingActionButton: FloatingActionButton(onPressed: () {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            "Successfully removed your response.",
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              // fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+          elevation: 6,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          duration: const Duration(seconds: 3),
+        ));
+      }),
     );
   }
 }

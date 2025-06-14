@@ -1,5 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/blood%20request/editScreen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -179,6 +180,35 @@ class Requestlist extends StatelessWidget {
                           EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       minimumSize: Size(0, 32),
                     ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () async {
+                      // Check if current user can edit
+                      final currentUser = FirebaseAuth.instance.currentUser;
+                      if (currentUser == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content:
+                                  Text("Please login to delete this request.")),
+                        );
+                        return;
+                      }
+                      if (currentUser.uid == userId) {
+                        // Allow editing
+                        await FirebaseFirestore.instance
+                            .collection('requests')
+                            .doc(requestId)
+                            .delete();
+                      } else {
+                        // Show not authorized
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(
+                                  "You can only delete your own requests.")),
+                        );
+                      }
+                    },
                   ),
                 ],
               )

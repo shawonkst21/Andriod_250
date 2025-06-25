@@ -1,4 +1,7 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:blood_donar/chatbot/chatpage.dart';
+import 'package:blood_donar/chatbot/consts.dart';
+import 'package:blood_donar/demo/percentage.dart';
 import 'package:blood_donar/introduceApp/onbroadingScreen.dart';
 import 'package:blood_donar/log/sign/login.dart';
 import 'package:blood_donar/screenFunction/secreens/HomePage.dart';
@@ -16,6 +19,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -30,6 +34,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  Gemini.init(apiKey: GEMINI_API_KEY);
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -38,6 +43,10 @@ void main() async {
       statusBarColor: Color.fromARGB(255, 255, 255, 255),
       statusBarIconBrightness: Brightness.dark,
     ),
+  );
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.manual,
+    //overlays: [SystemUiOverlay.bottom], // or [SystemUiOverlay.bottom], or both
   );
   await FirebaseMessaging.instance.requestPermission(
     alert: true,
@@ -246,6 +255,8 @@ class _MyAppState extends State<MyApp> {
         '/organizationList': (context) => const Organization_list(),
         '/NotificationScreen': (context) => const NotificationScreen(),
         '/SettingsPage': (context) => const SettingsPage(),
+        '/percentage': (context) => const DonorStatusPage(),
+        '/chatbot':(context)=>const Chatpage(),
       },
     );
   }

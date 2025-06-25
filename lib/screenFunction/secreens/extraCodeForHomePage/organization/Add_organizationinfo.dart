@@ -60,7 +60,7 @@ class _ProfilePage1State extends State<Organizationinfo> {
 
   Future<void> _saveToFirestore() async {
     try {
-     // final uid = FirebaseAuth.instance.currentUser!.uid;
+      // final uid = FirebaseAuth.instance.currentUser!.uid;
       await FirebaseFirestore.instance.collection('organization').doc().set({
         'name': _nameController.text,
         'phone': _phoneController.text,
@@ -105,7 +105,7 @@ class _ProfilePage1State extends State<Organizationinfo> {
           children: [
             FadeInDown(
               duration: Duration(milliseconds: 400),
-              child: Text("organization Info",
+              child: Text("Organization Info",
                   style: GoogleFonts.poppins(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,

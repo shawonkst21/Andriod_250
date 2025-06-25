@@ -27,7 +27,7 @@ class _BottomnavigatorbarState extends State<Bottomnavigatorbar> {
       // Wrap with ZoomIn animation
       duration: const Duration(milliseconds: 500),
       child: Scaffold(
-          backgroundColor: Colors.blue,
+          // backgroundColor: Colors.blue,
           bottomNavigationBar: CurvedNavigationBar(
             index: _selectedIndex,
             animationDuration: Duration(milliseconds: 400),

@@ -1,9 +1,10 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/notifications/My_response.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:icons_flutter/icons_flutter.dart';
+import 'package:lottie/lottie.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -31,15 +32,43 @@ class _NotificationScreenState extends State<NotificationScreen> {
     // Show thank you dialog
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text("Thank you!"),
-        content: Text("Your donation intent has been recorded."),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("Close"),
+      builder: (_) => ZoomIn(
+        child: AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-        ],
+          title: Text(
+            "Thank You!",
+            style: GoogleFonts.poppins(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.redAccent,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          content: Text(
+            "Your donation intent has been recorded.",
+            style: GoogleFonts.poppins(fontSize: 16),
+            textAlign: TextAlign.center,
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.redAccent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                "Close",
+                style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -74,13 +103,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
             //  .orderBy('timestamp', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
+          if (!snapshot.hasData) {
             return Center(child: CircularProgressIndicator());
+          }
 
           final notifications = snapshot.data!.docs;
 
           if (notifications.isEmpty) {
-            return Center(child: Text("No notifications found."));
+            return Center(
+                child: Lottie.asset('assets/inbox.json', height: 250));
           }
 
           return ListView.builder(
@@ -99,7 +130,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   borderRadius: BorderRadius.circular(20),
                   gradient: LinearGradient(
                     colors: [
-                      Colors.grey.shade100,
+                      const Color.fromARGB(255, 241, 229, 229),
                       const Color.fromARGB(255, 239, 163, 163),
                     ],
                     begin: Alignment.topLeft,

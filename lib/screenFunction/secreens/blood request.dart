@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lottie/lottie.dart';
-
 class BloodRequest extends StatefulWidget {
   const BloodRequest({super.key});
 
@@ -29,11 +28,70 @@ class _BloodRequeststate extends State<BloodRequest> {
   bool _isUrgent = false;
 
   List<String> districts = [
-    'Dhaka',
-    'Chittagong',
-    'Khulna',
+    'Bagerhat',
+    'Bandarban',
+    'Barguna',
     'Barisal',
-    'Sylhet'
+    'Bhola',
+    'Bogra',
+    'Brahmanbaria',
+    'Chandpur',
+    'Chapai Nawabganj',
+    'Chattogram',
+    'Chuadanga',
+    'Comilla',
+    'Cox\'s Bazar',
+    'Dhaka',
+    'Dinajpur',
+    'Faridpur',
+    'Feni',
+    'Gaibandha',
+    'Gazipur',
+    'Gopalganj',
+    'Habiganj',
+    'Jamalpur',
+    'Jashore',
+    'Jhalokati',
+    'Jhenaidah',
+    'Joypurhat',
+    'Khagrachari',
+    'Khulna',
+    'Kishoreganj',
+    'Kurigram',
+    'Kushtia',
+    'Lakshmipur',
+    'Lalmonirhat',
+    'Madaripur',
+    'Magura',
+    'Manikganj',
+    'Meherpur',
+    'Moulvibazar',
+    'Munshiganj',
+    'Mymensingh',
+    'Naogaon',
+    'Narail',
+    'Narayanganj',
+    'Narsingdi',
+    'Natore',
+    'Netrokona',
+    'Nilphamari',
+    'Noakhali',
+    'Pabna',
+    'Panchagarh',
+    'Patuakhali',
+    'Pirojpur',
+    'Rajbari',
+    'Rajshahi',
+    'Rangamati',
+    'Rangpur',
+    'Satkhira',
+    'Shariatpur',
+    'Sherpur',
+    'Sirajganj',
+    'Sunamganj',
+    'Sylhet',
+    'Tangail',
+    'Thakurgaon',
   ];
 
   List<String> bloodGroups = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
@@ -57,7 +115,7 @@ class _BloodRequeststate extends State<BloodRequest> {
         final currentUser = FirebaseAuth.instance.currentUser;
         final docRef = FirebaseFirestore.instance.collection("requests").doc();
 
-        await docRef.set ({
+        await docRef.set({
           "userId": currentUser?.uid,
           "fullName": _fullNameController.text.trim(),
           "phone": "+880${_phoneController.text.trim()}",
@@ -96,6 +154,7 @@ class _BloodRequeststate extends State<BloodRequest> {
           _selectedCondition = null;
           _isUrgent = false;
         });
+        //  Navigator.pop(context);
       } catch (e) {
         print("🔥 Error: $e");
         ScaffoldMessenger.of(context).showSnackBar(
@@ -113,18 +172,6 @@ class _BloodRequeststate extends State<BloodRequest> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      /*   appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: Text(
-          "Make a Request For Blood",
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-            color: const Color.fromARGB(255, 125, 11, 2),
-            fontSize: 18,
-          ),
-        ),
-        centerTitle: true,
-      ),*/
       extendBodyBehindAppBar: true,
       body: Padding(
         padding: EdgeInsets.only(left: 16, right: 16),
@@ -163,13 +210,7 @@ class _BloodRequeststate extends State<BloodRequest> {
                   ),
                 ),
               ),
-              /*  Divider(
-                color: Colors.red[200],
-                thickness: 1.2,
-                height: 24,
-                indent: 20, // left padding
-                endIndent: 20, // right padding
-              ),*/
+            
               SizedBox(height: 20),
               FadeInUp(
                   duration: Duration(milliseconds: 800),
@@ -292,58 +333,6 @@ class _BloodRequeststate extends State<BloodRequest> {
     );
   }
 
-/*
-  Widget _buildTextField(String label, TextEditingController controller,
-      {TextInputType keyboard = TextInputType.text}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 5),
-      child: FadeInUp(
-        duration: Duration(milliseconds: 500),
-        child: TextFormField(
-          controller: controller,
-          keyboardType: keyboard,
-          style: GoogleFonts.poppins(
-            fontSize: 14,
-            color: Colors.black87,
-          ),
-          decoration: InputDecoration(
-            labelText: label,
-            labelStyle: GoogleFonts.poppins(
-              color: Colors.red[900],
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
-            filled: true,
-            fillColor: Colors.red[50],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: Colors.red.shade200,
-                width: 1.5,
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: Colors.red.shade200,
-                width: 1.5,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2,
-              ),
-            ),
-            contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-          ),
-          validator: (value) =>
-              value == null || value.isEmpty ? 'Required' : null,
-        ),
-      ),
-    );
-  }*/
   Widget _buildTextField(String hint, TextEditingController controller,
       {TextInputType? inputType}) {
     return Container(
@@ -361,67 +350,7 @@ class _BloodRequeststate extends State<BloodRequest> {
     );
   }
 
-  /* Widget _buildDropdown(String label, List<String> items, String? selectedValue,
-      Function(String?) onChanged) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8),
-      child: FadeInUp(
-        duration: Duration(milliseconds: 500),
-        child: DropdownButtonFormField<String>(
-          value: selectedValue,
-          items: items
-              .map((item) => DropdownMenuItem(
-                    value: item,
-                    child: Text(
-                      item,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ))
-              .toList(),
-          onChanged: onChanged,
-          decoration: InputDecoration(
-            labelText: label,
-            labelStyle: GoogleFonts.poppins(
-              color: Colors.red[900],
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
-            filled: true,
-            fillColor: Colors.red[50],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: Colors.red.shade200,
-                width: 1.5,
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: Colors.red.shade200,
-                width: 1.5,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 2,
-              ),
-            ),
-            contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-          ),
-          dropdownColor: Colors.red[50],
-          icon: Icon(Icons.keyboard_arrow_down, color: Colors.red[900]),
-          validator: (value) => value == null ? 'Required' : null,
-        ),
-      ),
-    );
-  }
-  */
+
   Widget _buildDropdown(
     String hint,
     List<String> items,
@@ -455,4 +384,5 @@ class _BloodRequeststate extends State<BloodRequest> {
       ),
     );
   }
+
 }

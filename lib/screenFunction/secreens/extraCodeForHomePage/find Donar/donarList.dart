@@ -256,7 +256,7 @@ class Donarlist extends StatelessWidget {
                   ],
                 )),
             Positioned(
-                top: 55,
+                bottom: 10,
                 right: 20,
                 child: Row(
                   children: [
@@ -296,7 +296,23 @@ class Donarlist extends StatelessWidget {
 
                     // Call Button
                     GestureDetector(
-                      onTap: isAvailable ? dialPhone : null,
+                      onTap: () {
+                        if (isAvailable) {
+                          dialPhone();
+                        } else {
+                          final snackBar = SnackBar(
+                            elevation: 0,
+                            behavior: SnackBarBehavior.floating,
+                            backgroundColor: Colors.transparent,
+                            content: AwesomeSnackbarContent(
+                              title: 'Unavailable',
+                              message: 'This donor is not available right now.',
+                              contentType: ContentType.failure,
+                            ),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }
+                      },
                       child: Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(

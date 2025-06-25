@@ -1,3 +1,4 @@
+import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/find%20Donar/map_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,9 +15,8 @@ class _FindDonorScreenState extends State<FindDonorScreen> {
   String? selectedDistrict;
   String? selectedBloodGroup;
   bool isFilterActive = false;
+  bool isMapView = false;
 
-  //! here check if the user is available for donation or not
-  //! if the last donation date is more than 90 days ago, then the user is available for donation
   bool isAvailableForDonation(dynamic lastDonationDate) {
     DateTime lastDate;
 
@@ -31,20 +31,17 @@ class _FindDonorScreenState extends State<FindDonorScreen> {
     return DateTime.now().difference(lastDate).inDays >= 90;
   }
 
-//! Show the search dialog for filtering donors by district and blood group
-  //! when the user clicks on the search icon in the app bar
   void _showSearchDialog() {
     String? tempDistrict = selectedDistrict;
     String? tempBloodGroup = selectedBloodGroup;
 
     showGeneralDialog(
-      //barrierColor: Colors.yellow,
       context: context,
       barrierDismissible: true,
       barrierLabel: "Search Donor",
       transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (context, animation, secondaryAnimation) {
-        return const SizedBox(); // required, but unused
+        return const SizedBox();
       },
       transitionBuilder: (context, animation, secondaryAnimation, child) {
         final scale =
@@ -71,7 +68,7 @@ class _FindDonorScreenState extends State<FindDonorScreen> {
                 const SizedBox(height: 10),
                 Theme(
                   data: Theme.of(context).copyWith(
-                    canvasColor: Colors.white, // dropdown popup background
+                    canvasColor: Colors.white,
                   ),
                   child: DropdownButtonFormField<String>(
                     value: tempDistrict,
@@ -86,15 +83,14 @@ class _FindDonorScreenState extends State<FindDonorScreen> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
-                          color: Color.fromARGB(
-                              255, 125, 11, 2), // border color when focused
+                          color: Color.fromARGB(255, 125, 11, 2),
                           width: 2,
                         ),
                       ),
                     ),
                     items: [
                       'Dhaka',
-                      'Chattogram',
+                      'Chittagong',
                       'Khulna',
                       'Rajshahi',
                       'sylhet',
@@ -114,7 +110,7 @@ class _FindDonorScreenState extends State<FindDonorScreen> {
                 const SizedBox(height: 15),
                 Theme(
                   data: Theme.of(context).copyWith(
-                    canvasColor: Colors.white, // dropdown popup background
+                    canvasColor: Colors.white,
                   ),
                   child: DropdownButtonFormField<String>(
                     value: tempBloodGroup,
@@ -130,8 +126,7 @@ class _FindDonorScreenState extends State<FindDonorScreen> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
-                          color: Color.fromARGB(
-                              255, 125, 11, 2), // border color when focused
+                          color: Color.fromARGB(255, 125, 11, 2),
                           width: 2,
                         ),
                       ),
@@ -177,6 +172,7 @@ class _FindDonorScreenState extends State<FindDonorScreen> {
                     selectedDistrict = tempDistrict;
                     selectedBloodGroup = tempBloodGroup;
                     isFilterActive = true;
+                    isMapView = false;
                   });
                   Navigator.pop(context);
                 },
@@ -186,6 +182,20 @@ class _FindDonorScreenState extends State<FindDonorScreen> {
         );
       },
     );
+  }
+
+  List<QueryDocumentSnapshot> _getFilteredUsers(
+      List<QueryDocumentSnapshot> allUsers) {
+    if (!isFilterActive) return allUsers;
+
+    return allUsers.where((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      final city = data['city']?.toString().toLowerCase();
+      final blood = data['bloodGroup']?.toString().toUpperCase();
+      return (selectedDistrict == null ||
+              city == selectedDistrict!.toLowerCase()) &&
+          (selectedBloodGroup == null || blood == selectedBloodGroup);
+    }).toList();
   }
 
   @override
@@ -212,64 +222,145 @@ class _FindDonorScreenState extends State<FindDonorScreen> {
                   selectedDistrict = null;
                   selectedBloodGroup = null;
                   isFilterActive = false;
+                  isMapView = false;
                 });
               },
             ),
         ],
       ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection("users").snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: Column(
+        children: [
+          if (isFilterActive)
+            Container(
+              margin: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => isMapView = false),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: !isMapView
+                              ? const Color.fromARGB(255, 125, 11, 2)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.list,
+                              color:
+                                  !isMapView ? Colors.white : Colors.grey[600],
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              "List View",
+                              style: GoogleFonts.poppins(
+                                color: !isMapView
+                                    ? Colors.white
+                                    : Colors.grey[600],
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => isMapView = true),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: isMapView
+                              ? const Color.fromARGB(255, 125, 11, 2)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.map,
+                              color:
+                                  isMapView ? Colors.white : Colors.grey[600],
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              "Map View",
+                              style: GoogleFonts.poppins(
+                                color:
+                                    isMapView ? Colors.white : Colors.grey[600],
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          Expanded(
+            child: StreamBuilder(
+              stream:
+                  FirebaseFirestore.instance.collection("users").snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          }
+                if (snapshot.hasError) {
+                  return Center(child: Text("Error: ${snapshot.error}"));
+                }
 
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text("No donors found."));
-          }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(child: Text("No donors found."));
+                }
 
-          final allUsers = snapshot.data!.docs;
+                final allUsers = snapshot.data!.docs;
+                final filteredUsers = _getFilteredUsers(allUsers);
 
-          final users = isFilterActive
-              ? allUsers.where((doc) {
-                  final data = doc.data();
-                  final city = data['city']?.toString().toLowerCase();
-                  final blood = data['bloodGroup']?.toString().toUpperCase();
-                  return (selectedDistrict == null ||
-                          city == selectedDistrict!.toLowerCase()) &&
-                      (selectedBloodGroup == null ||
-                          blood == selectedBloodGroup);
-                }).toList()
-              : allUsers;
+                if (filteredUsers.isEmpty) {
+                  return const Center(
+                      child: Text("No donors match your search."));
+                }
 
-          if (users.isEmpty) {
-            return const Center(child: Text("No donors match your search."));
-          }
+                if (isMapView && isFilterActive) {
+                  return DonorMapView(users: filteredUsers);
+                }
 
-          return ListView(
-            children: users.map((doc) {
-              final data = doc.data();
-              final isAvailable =
-                  isAvailableForDonation(data['lastDonationDate']);
+                return ListView(
+                  children: filteredUsers.map((doc) {
+                    final data = doc.data() as Map<String, dynamic>;
+                    final isAvailable =
+                        isAvailableForDonation(data['lastDonationDate']);
 
-              return Donarlist(
-                name: data['name'] ?? "Unknown",
-                address:
-                    "${data['city'] ?? 'Unknown'}, ${data['country'] ?? 'Unknown'}",
-                bloodGroup: data['bloodGroup'] ?? "N/A",
-                phone: data['phone'] ?? "",
-                isAvailable: isAvailable,
-              );
-            }).toList(),
-          );
-        },
+                    return Donarlist(
+                      name: data['name'] ?? "Unknown",
+                      address:
+                          "${data['city'] ?? 'Unknown'}, ${data['country'] ?? 'Unknown'}",
+                      bloodGroup: data['bloodGroup'] ?? "N/A",
+                      phone: data['phone'] ?? "",
+                      isAvailable: isAvailable,
+                    );
+                  }).toList(),
+                );
+              },
+            ),
+          ),
+        ],
       ),
-
-      //! Floating action button for search dialog
       floatingActionButton: FloatingActionButton(
         onPressed: _showSearchDialog,
         backgroundColor: const Color.fromARGB(255, 125, 11, 2),

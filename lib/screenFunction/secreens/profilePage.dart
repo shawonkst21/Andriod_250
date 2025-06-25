@@ -6,9 +6,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_flutter/icons_flutter.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
+
+import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class Profilepage extends StatefulWidget {
   const Profilepage({super.key});
@@ -18,6 +19,7 @@ class Profilepage extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profilepage> {
+  //!dialouge box..................................
   void _showLogoutDialog() {
     showDialog(
       context: context,
@@ -86,7 +88,12 @@ class _ProfileState extends State<Profilepage> {
 
   Uint8List? _image;
   bool isAvailable = false;
-
+  final int totalCycleDays = 90;
+  DateTime? lastDonationDate;
+  bool isLoading = true;
+  int daysPassed = 0;
+  double progressPercent = 0.0;
+  bool canDonate = false;
   // Firestore user data fields
   String name = '';
   String email = '';
@@ -99,12 +106,40 @@ class _ProfileState extends State<Profilepage> {
   bool _notificationsEnabled = true;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+  // ignore: prefer_typing_uninitialized_variables
+  late int daysSinceDonation;
   @override
   void initState() {
     super.initState();
     fetchUserData();
     loadNotificationPreference();
+    fetchDonationData();
+  }
+
+  Future<void> fetchDonationData() async {
+    try {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid == null) {
+        throw Exception("User not logged in");
+      }
+
+      DocumentSnapshot userDoc =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      if (userDoc.exists && userDoc['lastDonationDate'] != null) {
+        Timestamp lastDonation = userDoc['lastDonationDate'];
+        lastDonationDate = lastDonation.toDate();
+        daysPassed = DateTime.now().difference(lastDonationDate!).inDays;
+        progressPercent = (daysPassed / totalCycleDays).clamp(0.0, 1.0);
+        canDonate = daysPassed >= totalCycleDays;
+      }
+    } catch (e) {
+      debugPrint("Error fetching donation data: $e");
+    }
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Future<void> loadNotificationPreference() async {
@@ -149,6 +184,7 @@ class _ProfileState extends State<Profilepage> {
 
   void showSettingsOptions() {
     showModalBottomSheet(
+      backgroundColor: Colors.white,
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
@@ -168,12 +204,19 @@ class _ProfileState extends State<Profilepage> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.star),
-                title: Text('Rating My App', style: GoogleFonts.poppins()),
+                title: Text('⭐    Rating My App', style: GoogleFonts.poppins()),
               ),
               ListTile(
-                leading: const Icon(Icons.language),
-                title: Text('Language', style: GoogleFonts.poppins()),
+                // leading: const Icon(Icons.language),
+                title: Text('🌍    Language', style: GoogleFonts.poppins()),
+                onTap: () {
+                  Navigator.pop(context);
+                  // Add language picker navigation here
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.history),
+                title: Text('Histroy', style: GoogleFonts.poppins()),
                 onTap: () {
                   Navigator.pop(context);
                   // Add language picker navigation here
@@ -214,13 +257,23 @@ class _ProfileState extends State<Profilepage> {
           name = doc['name'] ?? '';
           email = doc['email'] ?? '';
           bloodGroup = doc['bloodGroup'] ?? '';
-          // district = doc['district'] ?? '';
           phone = doc['phone'] ?? '';
           address = "Akhaliya, ${doc['city']}, ${doc['country']}";
-          isAvailable = doc['available'] ?? false;
-          final lastDonationTimestamp = doc['lastDonationDate'] as Timestamp;
-          final lastDonationDate = lastDonationTimestamp.toDate();
-          formattedDate = DateFormat('MMMM d, y').format(lastDonationDate);
+
+          // Check if lastDonationDate exists and is a Timestamp
+          if (doc.data().toString().contains('lastDonationDate') &&
+              doc['lastDonationDate'] != null) {
+            final lastDonationTimestamp = doc['lastDonationDate'] as Timestamp;
+            final lastDonationDate = lastDonationTimestamp.toDate();
+            formattedDate = DateFormat('MMMM d, y').format(lastDonationDate);
+            daysSinceDonation =
+                DateTime.now().difference(lastDonationDate).inDays;
+            isAvailable =
+                DateTime.now().difference(lastDonationDate).inDays >= 90;
+          } else {
+            formattedDate = 'No donation yet';
+            isAvailable = false;
+          }
         });
       }
     } catch (e) {
@@ -240,6 +293,10 @@ class _ProfileState extends State<Profilepage> {
     } catch (e) {
       print('Error updating last donation date: $e');
     }
+    setState(() {
+      isLoading = true;
+    });
+    fetchDonationData();
   }
 
   void updateAvailability(bool value) async {
@@ -302,31 +359,29 @@ class _ProfileState extends State<Profilepage> {
               ZoomIn(
                 child: Stack(
                   children: [
-                    _image != null
-                        ? CircleAvatar(
-                            radius: 65,
-                            backgroundImage: MemoryImage(_image!),
-                          )
-                        : ClipRRect(
-                            borderRadius: BorderRadius.circular(25),
-                            child: const CircleAvatar(
-                              radius: 60,
-                              backgroundColor:
-                                  Color.fromARGB(170, 239, 120, 120),
-                              child: CircleAvatar(
-                                radius: 55,
-                                backgroundImage:
-                                    AssetImage('assets/shawon.jpg'),
-                              ),
+                    isLoading
+                        ? const CircularProgressIndicator()
+                        : CircularPercentIndicator(
+                            radius: 61.0,
+                            lineWidth: 8.0,
+                            animation: true,
+                            percent: progressPercent,
+                            center: CircleAvatar(
+                              radius: 53,
+                              backgroundImage: AssetImage('assets/shawon.jpg'),
                             ),
+                            circularStrokeCap: CircularStrokeCap.round,
+                            progressColor:
+                                const Color.fromARGB(221, 244, 67, 54),
+                            backgroundColor: Colors.red.shade100,
                           ),
                     Positioned(
                       bottom: -15,
-                      left: 70,
+                      left: 77,
                       child: IconButton(
                         onPressed: () {},
                         icon: const Icon(
-                          FlutterIcons.camera_account_mco,
+                          FlutterIcons.add_a_photo_mdi,
                           color: Color.fromARGB(255, 125, 11, 2),
                         ),
                       ),
@@ -360,8 +415,16 @@ class _ProfileState extends State<Profilepage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
-
+              const SizedBox(height: 2),
+              Text(
+                canDonate
+                    ? "You are eligible to donate again"
+                    : "${totalCycleDays - daysPassed} days remaining",
+                style: GoogleFonts.poppins(
+                  color: canDonate ? Colors.green : Colors.grey,
+                  fontSize: 14,
+                ),
+              ),
               //! Phone container with border
               Padding(
                 padding:
@@ -582,7 +645,7 @@ class _ProfileState extends State<Profilepage> {
                           top: 7,
                           right: 14,
                           child: Icon(
-                            FlutterIcons.gender_male_female_mco,
+                            FlutterIcons.gender_male_mco,
                             size: 35,
                             color: Color.fromARGB(255, 125, 11, 2),
                           )),
@@ -672,21 +735,40 @@ class _ProfileState extends State<Profilepage> {
                             ),
                           ],
                         ),
-                        Switch(
-                          value: isAvailable,
-                          activeColor: Colors.green,
-                          onChanged: (value) {
-                            setState(() {
-                              isAvailable = value;
-                            });
-                            updateAvailability(value);
+                        GestureDetector(
+                          onTap: () {
+                            if (daysSinceDonation < 90) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'You cannot change your availability status.\nIt’s only been $daysSinceDonation days since your last donation.',
+                                    style: GoogleFonts.poppins(),
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            } else {
+                              setState(() {
+                                isAvailable = !isAvailable;
+                              });
+                              updateAvailability(isAvailable);
+                            }
                           },
+                          child: AbsorbPointer(
+                            absorbing: true,
+                            child: Switch(
+                              value: isAvailable,
+                              activeColor: Colors.green,
+                              onChanged: (_) {},
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
+
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 25, vertical: 0),

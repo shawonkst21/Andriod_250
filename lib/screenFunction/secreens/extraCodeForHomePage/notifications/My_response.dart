@@ -207,7 +207,7 @@ class MyResponsesScreen extends StatelessWidget {
                             ),
                             Stack(
                               children: [
-                                Container(
+                                SizedBox(
                                   width: double.infinity,
                                   height: 45,
                                 ),

@@ -1,5 +1,4 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:blood_donar/log/sign/register_page.dart';
 import 'package:blood_donar/screenFunction/bottomNavigatorBar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -32,26 +31,26 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(builder: (context) => Bottomnavigatorbar()),
       );
       //! add snackbar here ........................................
-      var snackBar2 = SnackBar(
-        elevation: 0,
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.transparent,
-        content: AwesomeSnackbarContent(
-          title: 'Success!',
-          titleTextStyle: GoogleFonts.poppins(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-          message: 'Login Successful 🎉',
-          contentType: ContentType.success,
-        ),
-      );
-      final snackBar = snackBar2;
+      // var snackBar2 = SnackBar(
+      //   elevation: 0,
+      //   behavior: SnackBarBehavior.floating,
+      //   backgroundColor: Colors.transparent,
+      //   content: AwesomeSnackbarContent(
+      //     title: 'Success!',
+      //     titleTextStyle: GoogleFonts.poppins(
+      //       fontSize: 20,
+      //       fontWeight: FontWeight.bold,
+      //       color: Colors.white,
+      //     ),
+      //     message: 'Login Successful 🎉',
+      //     contentType: ContentType.success,
+      //   ),
+      // );
+      // final snackBar = snackBar2;
 
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(snackBar);
+      // ScaffoldMessenger.of(context)
+      //   ..hideCurrentSnackBar()
+      //   ..showSnackBar(snackBar);
 
       // ⏳ Delay a bit so user sees the snackbar
       // await Future.delayed(const Duration(seconds: 1));

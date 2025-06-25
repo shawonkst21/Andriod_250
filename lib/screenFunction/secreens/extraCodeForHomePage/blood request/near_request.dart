@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lottie/lottie.dart';
 
 class nearRequest extends StatefulWidget {
   const nearRequest({super.key});
@@ -174,6 +175,7 @@ class _FindDonorScreenState extends State<nearRequest> {
       },
     );
   }
+
 //!main part of this page .............................................
   @override
   Widget build(BuildContext context) {
@@ -237,7 +239,7 @@ class _FindDonorScreenState extends State<nearRequest> {
           if (requests.isEmpty) {
             return const Center(child: Text("No request match your search."));
           }
-            //! Displaying the list of requests.....(2)
+          //! Displaying the list of requests.....(2)
           return ListView(
             children: requests.map((doc) {
               final data = doc.data();
@@ -319,6 +321,7 @@ class _FindDonorScreenState extends State<nearRequest> {
       ),
     );
   }
+
 //! Function to show user's own requests............(3).....................
   void _showUserRequests() {
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
@@ -359,7 +362,8 @@ class _FindDonorScreenState extends State<nearRequest> {
                 return Center(child: Text("Error: ${snapshot.error}"));
               }
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return const Center(child: Text("You have no requests."));
+                return Center(
+                    child: Lottie.asset('assets/inbox.json', height: 250));
               }
 
               final myRequests = snapshot.data!.docs;

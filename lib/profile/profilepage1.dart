@@ -1,4 +1,4 @@
-import 'package:blood_donar/demo/home.dart';
+import 'package:blood_donar/screenFunction/secreens/HomePage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -157,7 +157,7 @@ class _ProfilePage1State extends State<ProfilePage1> {
       );
       Navigator.pushReplacement(
        context,
-       MaterialPageRoute(builder: (context) => homePage()),
+       MaterialPageRoute(builder: (context) => Homepage()),
       );
     } catch (e) {
       print("Error: $e");

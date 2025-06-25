@@ -1,12 +1,13 @@
-import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/notifications/My_response.dart';
-import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/buttonfunction.dart';
-import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/donateContainer.dart';
-import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/firstWelcome.dart';
+import 'dart:async';
+import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/firstportionOf_homePage/buttonfunction.dart';
+import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/firstportionOf_homePage/donateContainer.dart';
+import 'package:blood_donar/screenFunction/secreens/extraCodeForHomePage/firstportionOf_homePage/firstWelcome.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:icons_flutter/icons_flutter.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -18,11 +19,27 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+  late PageController _pageController;
+  int _currentPage = 0;
   @override
   void initState() {
     super.initState();
     saveFCMToken();
+    _pageController = PageController(initialPage: 0);
+    Timer.periodic(const Duration(seconds: 3), (Timer timer) {
+      int nextPage = (_currentPage + 1) % 3; // Calculate next page index
+      _pageController.animateToPage(
+        nextPage,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeIn,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   Future<void> saveFCMToken() async {
@@ -117,10 +134,72 @@ class _HomepageState extends State<Homepage> {
               color: Colors.grey.shade300,
               thickness: 1,
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 8),
             AllButtonForBloodDonation(),
             SizedBox(
               height: 10,
+            ),
+            Divider(
+              color: Colors.grey.shade300,
+              thickness: 1,
+            ),
+
+            Text(
+              "Event:",
+              style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            SizedBox(
+              height: 180,
+              //width: 200,
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (int page) {
+                  setState(() {
+                    _currentPage = page; // Update _currentPage on page change
+                  });
+                },
+                children: [
+                  _buildCarouselItem(
+                    imagePath: 'assets/event3.jpg',
+                    discountText: '🗓️Date:24 June',
+                    description: 'Together, we can  \nmake a difference!',
+                  ),
+                  _buildCarouselItem(
+                    imagePath: 'assets/event2.jpg',
+                    discountText: '🗺️Sust,A building',
+                    description: 'Be the reason \nsomeone smiles again ',
+                  ),
+                  _buildCarouselItem(
+                    imagePath: 'assets/event1.jpeg',
+                    discountText: 'Date:05 july',
+                    description: 'we’re not \njust donating blood',
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+
+            // Dots Indicator
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(3, (index) {
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                  height: 8,
+                  width: _currentPage == index ? 12 : 8,
+                  decoration: BoxDecoration(
+                    color: _currentPage == index ? Colors.pink : Colors.grey,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                );
+              }),
             ),
             Divider(
               color: Colors.grey.shade300,
@@ -139,31 +218,85 @@ class _HomepageState extends State<Homepage> {
               ),
             ),
             SizedBox(
-              height: 100,
-            )
+              height: 10,
+            ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            "Successfully removed your response.",
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              // fontWeight: FontWeight.w600,
-              fontSize: 14,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/chatbot');
+        },
+      ),
+    );
+  }
+
+  Widget _buildCarouselItem({
+    required String imagePath,
+    required String discountText,
+    required String description,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16.0),
+          image: DecorationImage(
+            image: AssetImage(imagePath),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.0),
+            gradient: LinearGradient(
+              colors: [
+                Colors.black.withOpacity(0.5),
+                Colors.black.withOpacity(0.2),
+              ],
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
             ),
           ),
-          backgroundColor: Colors.redAccent,
-          behavior: SnackBarBehavior.floating,
-          elevation: 6,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  discountText,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  child: const Text('View details'),
+                ),
+              ],
+            ),
           ),
-          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          duration: const Duration(seconds: 3),
-        ));
-      }),
+        ),
+      ),
     );
   }
 }
